@@ -1,32 +1,15 @@
 import React from 'react'
-import { useRouter } from 'next/router'
+import UserInfo from './app/components/UserInfo'
 
-const LoginButton = () => {
-  const router = useRouter()
-  return (
-    <button
-      onClick={() => router.push('/login')}
-      style={{
-        padding: '8px 16px',
-        backgroundColor: '#0070f3',
-        color: 'white',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer'
-      }}
-    >
-      Login
-    </button>
-  )
-}
-
-export default {
+const config = {
   logo: <span>My Nextra Documentation</span>,
   project: {
     link: 'https://github.com/shuding/nextra'
   },
   navbar: {
-    extraContent: <LoginButton />
-  }
+    extraContent: <UserInfo />
+  },
   // ... other theme options
 }
+
+export default config

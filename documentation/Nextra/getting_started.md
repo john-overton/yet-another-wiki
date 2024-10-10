@@ -1,7 +1,3 @@
-import InstallNextraTheme from '@components/install-nextra-theme.mdx'
-import ReadeToGo from '@components/ready-to-go.mdx'
-import { Callout, Steps } from 'nextra/components'
-
 # Docs Theme
 
 Nextra Docs Theme is a theme that includes almost everything you need to build a
