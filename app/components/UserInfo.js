@@ -4,8 +4,12 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 const UserInfo = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
 
   if (session) {
     return (
