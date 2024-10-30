@@ -4,8 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import SortOrderEditor from './SortOrderEditor';
 
-// Import WysimarkWrapper with no SSR
-const WysimarkWrapper = dynamic(() => import('./WysimarkWrapper'), {
+// Import QuillWrapper with no SSR
+const QuillWrapper = dynamic(() => import('./MarkdownEditorWrapper'), {
   ssr: false
 });
 
@@ -38,25 +38,29 @@ const MarkdownEditor = ({ file, onSave, onCancel }) => {
     }
   };
 
-  const handleImageUpload = useCallback(async (file) => {
+  const handleUpload = useCallback(async (file) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('/api/upload-image', {
+      // Determine if this is an image file
+      const isImage = file.type.startsWith('image/');
+      const endpoint = isImage ? '/api/upload-image' : '/api/upload-file';
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         body: formData
       });
 
       if (!response.ok) {
-        throw new Error('Failed to upload image');
+        throw new Error('Failed to upload file');
       }
 
       const data = await response.json();
       return data.url;
     } catch (error) {
-      console.error('Error uploading image:', error);
-      setErrorMessage('Failed to upload image. Please try again.');
+      console.error('Error uploading file:', error);
+      setErrorMessage('Failed to upload file. Please try again.');
       return null;
     }
   }, []);
@@ -232,11 +236,11 @@ const MarkdownEditor = ({ file, onSave, onCancel }) => {
         <div className="text-red-500 mb-4">{errorMessage}</div>
       )}
       <div className="flex-grow">
-        <WysimarkWrapper
+        <QuillWrapper
           value={content}
           onChange={setContent}
-          onUpload={handleImageUpload}
-          className="wysimark-editor"
+          onUpload={handleUpload}
+          className="quill-editor"
         />
       </div>
     </div>

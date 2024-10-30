@@ -1,0 +1,299 @@
+/*!
+ * Quill Editor v2.0.0
+ * https://quilljs.com/
+ * Copyright (c) 2014, Jason Chen
+ * Copyright (c) 2013, salesforce.com
+ */
+
+.ql-container {
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 13px;
+  height: 100%;
+  margin: 0px;
+  position: relative;
+}
+
+.ql-container.ql-disabled .ql-tooltip {
+  visibility: hidden;
+}
+
+.ql-container:not(.ql-disabled) li[data-list=checked] > .ql-ui,
+.ql-container:not(.ql-disabled) li[data-list=unchecked] > .ql-ui {
+  cursor: pointer;
+}
+
+.ql-clipboard {
+  left: -100000px;
+  height: 1px;
+  overflow-y: hidden;
+  position: absolute;
+  top: 50%;
+}
+
+.ql-clipboard p {
+  margin: 0;
+  padding: 0;
+}
+
+.ql-editor {
+  box-sizing: border-box;
+  line-height: 1.42;
+  height: 100%;
+  outline: none;
+  overflow-y: auto;
+  padding: 12px 15px;
+  tab-size: 4;
+  -moz-tab-size: 4;
+  text-align: left;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.ql-editor > * {
+  cursor: text;
+}
+
+.ql-editor p,
+.ql-editor ol,
+.ql-editor pre,
+.ql-editor blockquote,
+.ql-editor h1,
+.ql-editor h2,
+.ql-editor h3 {
+  margin: 0;
+  padding: 0;
+  counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+.ql-editor p,
+.ql-editor pre,
+.ql-editor blockquote {
+  margin-bottom: 1em;
+}
+
+.ql-editor ol,
+.ql-editor ul {
+  padding-left: 1.5em;
+}
+
+.ql-editor ol > li,
+.ql-editor ul > li {
+  list-style-type: none;
+}
+
+.ql-editor ul > li::before {
+  content: '\2022';
+}
+
+.ql-editor ul[data-checked=true],
+.ql-editor ul[data-checked=false] {
+  pointer-events: none;
+}
+
+.ql-editor ul[data-checked=true] > li *,
+.ql-editor ul[data-checked=false] > li * {
+  pointer-events: all;
+}
+
+.ql-editor ul[data-checked=true] > li::before,
+.ql-editor ul[data-checked=false] > li::before {
+  color: #777;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.ql-editor ul[data-checked=true] > li::before {
+  content: '\2611';
+}
+
+.ql-editor ul[data-checked=false] > li::before {
+  content: '\2610';
+}
+
+.ql-editor li::before {
+  display: inline-block;
+  white-space: nowrap;
+  width: 1.2em;
+}
+
+.ql-editor li:not(.ql-direction-rtl)::before {
+  margin-left: -1.5em;
+  margin-right: 0.3em;
+  text-align: right;
+}
+
+.ql-editor li.ql-direction-rtl::before {
+  margin-left: 0.3em;
+  margin-right: -1.5em;
+}
+
+.ql-editor ol li:not(.ql-direction-rtl),
+.ql-editor ul li:not(.ql-direction-rtl) {
+  padding-left: 1.5em;
+}
+
+.ql-editor ol li.ql-direction-rtl,
+.ql-editor ul li.ql-direction-rtl {
+  padding-right: 1.5em;
+}
+
+.ql-editor ol li {
+  counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+  counter-increment: list-0;
+}
+
+.ql-editor ol li:before {
+  content: counter(list-0, decimal) '. ';
+}
+
+.ql-editor .ql-video {
+  display: block;
+  max-width: 100%;
+}
+
+.ql-editor.ql-blank::before {
+  color: rgba(0,0,0,0.6);
+  content: attr(data-placeholder);
+  font-style: italic;
+  left: 15px;
+  pointer-events: none;
+  position: absolute;
+  right: 15px;
+}
+
+.ql-snow.ql-toolbar:after,
+.ql-snow .ql-toolbar:after {
+  clear: both;
+  content: '';
+  display: table;
+}
+
+.ql-snow.ql-toolbar button,
+.ql-snow .ql-toolbar button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  float: left;
+  height: 24px;
+  padding: 3px 5px;
+  width: 28px;
+}
+
+.ql-snow.ql-toolbar button svg,
+.ql-snow .ql-toolbar button svg {
+  float: left;
+  height: 100%;
+}
+
+.ql-snow .ql-toolbar {
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-family: inherit;
+  padding: 8px;
+}
+
+.ql-snow .ql-editor {
+  border: 1px solid #ccc;
+}
+
+.ql-toolbar.ql-snow .ql-picker-label {
+  border: 1px solid transparent;
+}
+
+.ql-snow .ql-tooltip {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0px 0px 5px #ddd;
+  color: #444;
+  padding: 5px 12px;
+  white-space: nowrap;
+}
+
+.ql-snow .ql-tooltip::before {
+  content: "Visit URL:";
+  line-height: 26px;
+  margin-right: 8px;
+}
+
+.ql-snow .ql-tooltip input[type=text] {
+  display: none;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  height: 26px;
+  margin: 0px;
+  padding: 3px 5px;
+  width: 170px;
+}
+
+.ql-snow .ql-tooltip a.ql-preview {
+  display: inline-block;
+  max-width: 200px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+}
+
+.ql-snow .ql-tooltip a.ql-action::after {
+  border-right: 1px solid #ccc;
+  content: 'Edit';
+  margin-left: 16px;
+  padding-right: 8px;
+}
+
+.ql-snow .ql-tooltip a.ql-remove::before {
+  content: 'Remove';
+  margin-left: 8px;
+}
+
+.ql-snow .ql-tooltip.ql-editing a.ql-preview,
+.ql-snow .ql-tooltip.ql-editing a.ql-remove {
+  display: none;
+}
+
+.ql-snow .ql-tooltip.ql-editing input[type=text] {
+  display: inline-block;
+}
+
+.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
+  border-right: 0px;
+  content: 'Save';
+  padding-right: 0px;
+}
+
+.ql-snow .ql-tooltip[data-mode=link]::before {
+  content: "Enter link:";
+}
+
+.ql-snow .ql-tooltip[data-mode=formula]::before {
+  content: "Enter formula:";
+}
+
+.ql-snow a {
+  color: #06c;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .ql-snow .ql-toolbar,
+  .ql-snow .ql-editor {
+    border-color: #374151;
+  }
+  
+  .ql-snow .ql-tooltip {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #e5e7eb;
+  }
+  
+  .ql-snow .ql-tooltip input[type=text] {
+    border-color: #374151;
+    background: #374151;
+    color: #e5e7eb;
+  }
+  
+  .ql-editor.ql-blank::before {
+    color: rgba(255,255,255,0.6);
+  }
+}
