@@ -35,6 +35,7 @@ Quill.register({
 const QuillWrapper = ({ value, onChange, onUpload, style, className }) => {
   const editorRef = useRef(null);
   const quillRef = useRef(null);
+  const toolbarRef = useRef(null);
 
   const handleUpload = async (file) => {
     try {
@@ -63,41 +64,11 @@ const QuillWrapper = ({ value, onChange, onUpload, style, className }) => {
   };
 
   useEffect(() => {
-    if (!editorRef.current) return;
-
-    const toolbarOptions = [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic'],
-      ['blockquote', 'code-block'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      ['link', 'image'],
-      ['clean']
-    ];
+    if (!editorRef.current || !toolbarRef.current) return;
 
     const quill = new Quill(editorRef.current, {
       modules: {
-        toolbar: {
-          container: toolbarOptions,
-          handlers: {
-            image: function() {
-              const input = document.createElement('input');
-              input.setAttribute('type', 'file');
-              input.setAttribute('accept', 'image/*');
-              input.click();
-
-              input.onchange = async () => {
-                const file = input.files[0];
-                if (file) {
-                  const url = await handleUpload(file);
-                  if (url) {
-                    const range = quill.getSelection(true);
-                    quill.insertEmbed(range.index, 'image', url);
-                  }
-                }
-              };
-            }
-          }
-        },
+        toolbar: toolbarRef.current,
         history: {
           delay: 1000,
           maxStack: 500,
@@ -145,6 +116,26 @@ const QuillWrapper = ({ value, onChange, onUpload, style, className }) => {
       }
     });
 
+    // Setup image handler
+    const toolbar = quill.getModule('toolbar');
+    toolbar.addHandler('image', function() {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/*');
+      input.click();
+
+      input.onchange = async () => {
+        const file = input.files[0];
+        if (file) {
+          const url = await handleUpload(file);
+          if (url) {
+            const range = quill.getSelection(true);
+            quill.insertEmbed(range.index, 'image', url);
+          }
+        }
+      };
+    });
+
     quillRef.current = quill;
 
     return () => {
@@ -166,6 +157,35 @@ const QuillWrapper = ({ value, onChange, onUpload, style, className }) => {
       ...style,
       fontFamily: openSans.style.fontFamily,
     }}>
+      <div ref={toolbarRef}>
+        <span className="ql-formats">
+          <select className="ql-header">
+            <option value="1">Heading 1</option>
+            <option value="2">Heading 2</option>
+            <option value="3">Heading 3</option>
+            <option selected>Normal</option>
+          </select>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-bold"></button>
+          <button className="ql-italic"></button>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-blockquote"></button>
+          <button className="ql-code-block"></button>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-list" value="ordered"></button>
+          <button className="ql-list" value="bullet"></button>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-link"></button>
+          <button className="ql-image"></button>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-clean"></button>
+        </span>
+      </div>
       <div ref={editorRef} style={{
         minHeight: 'calc(100vh - 300px)',
         height: '100%',
