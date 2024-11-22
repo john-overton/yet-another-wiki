@@ -78,8 +78,9 @@ export default function UserButton({ user: initialUser }) {
   }
 
   const handleLogout = () => {
+    // Use window.location.origin to get the current domain
     signOut({ 
-      callbackUrl: '/',
+      callbackUrl: window.location.origin,
       redirect: true
     });
   };
