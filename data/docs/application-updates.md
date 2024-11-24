@@ -31,8 +31,7 @@ There are two ways to update your installation:
 If you're using Docker:
 
 1. Create a backup as described above
-2. Pull the new version of the container:
-   ```
+2. Pull the new version of the container:```
    docker pull yetanotherwiki/yaw:latest
    ```
 3. Stop and remove the existing container
@@ -53,8 +52,8 @@ During the setup process:
 
 ## Important Notes
 
-- Never proceed with an update without first creating and verifying a backup
-- The backup includes all your data, database, public files, and configuration
-- During the restore process, all existing content will be replaced with the content from your backup
-- Make sure you have enough disk space for both the update and your backup
-- Keep your backup file secure and accessible until you've verified the update was successful
+* Never proceed with an update without first creating and verifying a backup
+* The backup includes all your data, database, public files, and configuration
+* During the restore process, all existing content will be replaced with the content from your backup
+* Make sure you have enough disk space for both the update and your backup
+* Keep your backup file secure and accessible until you've verified the update was successful

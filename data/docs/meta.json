@@ -7,7 +7,7 @@
       "path": "welcome.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-24T01:17:06.671Z",
+      "lastModified": "2024-11-24T09:46:28.464Z",
       "sortOrder": 1,
       "children": []
     },
@@ -18,16 +18,16 @@
       "path": "manual.md",
       "isPublic": false,
       "version": 1,
-      "lastModified": "2024-11-22T02:34:46.041Z",
+      "lastModified": "2024-11-24T09:35:50.409Z",
       "children": [
         {
           "id": "3",
           "slug": "markdown-renderer-and-cheat-sheet",
           "title": "Markdown Renderer and Cheat Sheet",
           "path": "markdown-renderer-and-cheat-sheet.md",
-          "isPublic": true,
+          "isPublic": false,
           "version": 1,
-          "lastModified": "2024-11-22T17:14:06.559Z",
+          "lastModified": "2024-11-24T09:28:50.095Z",
           "children": [],
           "sortOrder": 1
         },
@@ -36,9 +36,9 @@
           "slug": "editing-a-page",
           "title": "Editing A Page",
           "path": "editing-a-page.md",
-          "isPublic": true,
+          "isPublic": false,
           "version": 1,
-          "lastModified": "2024-11-22T02:33:35.505Z",
+          "lastModified": "2024-11-24T09:29:02.164Z",
           "children": [],
           "sortOrder": 2
         },
@@ -47,9 +47,9 @@
           "slug": "importing-pages",
           "title": "Importing Pages",
           "path": "importing-pages.md",
-          "isPublic": true,
+          "isPublic": false,
           "version": 1,
-          "lastModified": "2024-11-22T17:17:23.720Z",
+          "lastModified": "2024-11-24T09:29:10.655Z",
           "children": [],
           "sortOrder": 3
         },
@@ -58,9 +58,9 @@
           "slug": "trash-bin",
           "title": "Trash Bin",
           "path": "trash-bin.md",
-          "isPublic": true,
+          "isPublic": false,
           "version": 1,
-          "lastModified": "2024-11-22T02:33:51.181Z",
+          "lastModified": "2024-11-24T09:29:19.652Z",
           "children": [],
           "sortOrder": 4
         },
@@ -81,18 +81,18 @@
           "slug": "app-settings",
           "title": "App Settings",
           "path": "app-settings.md",
-          "isPublic": true,
+          "isPublic": false,
           "version": 1,
-          "lastModified": "2024-11-22T02:34:16.353Z",
+          "lastModified": "2024-11-24T09:29:28.865Z",
           "children": [
             {
               "id": "9",
               "slug": "user-management",
               "title": "User Management",
               "path": "user-management.md",
-              "isPublic": true,
+              "isPublic": false,
               "version": 1,
-              "lastModified": "2024-11-22T02:34:57.666Z",
+              "lastModified": "2024-11-24T09:29:38.431Z",
               "children": [],
               "sortOrder": 1
             },
@@ -101,9 +101,9 @@
               "slug": "theming",
               "title": "Theming",
               "path": "theming.md",
-              "isPublic": true,
+              "isPublic": false,
               "version": 1,
-              "lastModified": "2024-11-22T02:35:07.251Z",
+              "lastModified": "2024-11-24T09:29:48.583Z",
               "children": [],
               "sortOrder": 2
             },
@@ -112,9 +112,9 @@
               "slug": "backup-and-restore",
               "title": "Backup and Restore",
               "path": "backup-and-restore.md",
-              "isPublic": true,
+              "isPublic": false,
               "version": 1,
-              "lastModified": "2024-11-22T02:35:18.985Z",
+              "lastModified": "2024-11-24T09:29:58.793Z",
               "children": [],
               "sortOrder": 3
             }
@@ -126,9 +126,9 @@
           "slug": "application-updates",
           "title": "Application Updates",
           "path": "application-updates.md",
-          "isPublic": true,
+          "isPublic": false,
           "version": 1,
-          "lastModified": "2024-11-22T03:00:48.596Z",
+          "lastModified": "2024-11-24T09:30:07.704Z",
           "children": [],
           "sortOrder": 7
         },
@@ -137,15 +137,48 @@
           "slug": "server-side-stuff",
           "title": "Server Side Stuff",
           "path": "server-side-stuff.md",
-          "isPublic": true,
+          "isPublic": false,
           "version": 1,
-          "lastModified": "2024-11-22T17:45:08.086Z",
+          "lastModified": "2024-11-24T09:30:17.203Z",
           "children": [],
           "sortOrder": 8
         }
       ],
+      "sortOrder": 5
+    },
+    {
+      "id": "14",
+      "slug": "for-teams",
+      "title": "For Teams",
+      "path": "for-teams.md",
+      "isPublic": false,
+      "version": 1,
+      "lastModified": "2024-11-24T09:34:30.829Z",
+      "children": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "15",
+      "slug": "for-self-hosters",
+      "title": "For Self-Hosters",
+      "path": "for-self-hosters.md",
+      "isPublic": false,
+      "version": 1,
+      "lastModified": "2024-11-24T09:34:42.411Z",
+      "children": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "16",
+      "slug": "features",
+      "title": "Features",
+      "path": "features.md",
+      "isPublic": false,
+      "version": 1,
+      "lastModified": "2024-11-24T09:41:20.604Z",
+      "children": [],
       "sortOrder": 2
     }
   ],
-  "lastId": 13
+  "lastId": 16
 }

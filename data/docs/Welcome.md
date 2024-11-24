@@ -46,8 +46,8 @@ Yet Another Wiki is like that friend who's really good at organizing stuff but d
 ## Pricing That Makes Sense 💖
 
 * Free for personal use (hobby projects need love too)
-* Paid plans for teams (with unlimited users because we're not monsters)
-* Reusable licenses (move them around like furniture)
+* Paid license for teams (with unlimited users because we're not monsters)
+* <u>No subscriptions</u> (your license lasts forever regardless of updates and new features added)
 * Built-in user management (no PhD required)
 
 ## Who Is This For? 👋

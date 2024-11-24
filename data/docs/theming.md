@@ -6,37 +6,37 @@ The theming panel allows you to customize the visual appearance and navigation s
 
 You can choose between three theme modes:
 
-- **Light Mode**: A bright theme suitable for daytime use
-- **Dark Mode**: A darker theme that's easier on the eyes in low-light conditions
-- **System**: Automatically matches your system's theme preferences
+* **Light Mode**: A bright theme suitable for daytime use
+* **Dark Mode**: A darker theme that's easier on the eyes in low-light conditions
+* **System**: Automatically matches your system's theme preferences
 
 ## Header Customization
 
 The header section can be customized with:
 
-- **Header Logo**: Upload a custom logo to display in the header
-- **Navigation Links**: Add up to 5 custom navigation links
-  - Each link can have a text label and URL
-  - Links can be edited or deleted as needed
-  - Links will appear in the main navigation bar
+* **Header Logo**: Upload a custom logo to display in the header
+* **Navigation Links**: Add up to 5 custom navigation links
+  * Each link can have a text label and URL
+  * Links can be edited or deleted as needed
+  * Links will appear in the main navigation bar
 
 ## Footer Customization
 
 The footer can be extensively customized with:
 
-- **Footer Logo**: Upload a custom logo to display in the footer
-- **Two Column Layout**: Create two columns of links, each with:
-  - A custom header text
-  - Up to 6 links per column
-  - Each link can have a text label and URL
-  - Links can be edited or deleted as needed
+* **Footer Logo**: Upload a custom logo to display in the footer
+* **Two Column Layout**: Create two columns of links, each with:
+  * A custom header text
+  * Up to 6 links per column
+  * Each link can have a text label and URL
+  * Links can be edited or deleted as needed
 
 ### Footer Settings (Pro License)
 
 With a Pro license, you get additional footer customization options:
 
-- **Custom Copyright Text**: Add your own copyright message
-- **"Powered By" Text**: Option to hide the "Powered by" text
+* **Custom Copyright Text**: Add your own copyright message
+* **"Powered By" Text**: Option to hide the "Powered by" text
 
 ## Managing Links
 

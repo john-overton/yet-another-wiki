@@ -98,8 +98,7 @@ Markdown:
 Renders as:
 
 > This is a blockquote
-> Multiple lines
->> Nested blockquotes
+> Multiple lines> Nested blockquotes
 
 ## Enhanced Features
 
