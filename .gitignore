@@ -15,7 +15,6 @@
 
 # database
 /prisma/db
-/prisma/migrations
 *.db
 
 # production
