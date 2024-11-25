@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import TermsModal from './TermsModal';
 
 export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }) {
   const [formData, setFormData] = useState({
@@ -16,7 +17,28 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
   const [emailError, setEmailError] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsModalOpen, setTermsModalOpen] = useState(false);
+  const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
+  const [termsContent, setTermsContent] = useState('');
+  const [privacyContent, setPrivacyContent] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    const loadTermsAndPrivacy = async () => {
+      try {
+        const response = await fetch('/api/settings/terms');
+        if (response.ok) {
+          const data = await response.json();
+          setTermsContent(data.termsAndConditions || '');
+          setPrivacyContent(data.privacyPolicy || '');
+        }
+      } catch (error) {
+        console.error('Error loading terms:', error);
+      }
+    };
+    loadTermsAndPrivacy();
+  }, []);
 
   // Email validation regex
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -90,6 +112,12 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!termsAccepted) {
+      setError('You must accept the Terms and Privacy Policy to register');
+      return;
+    }
+    
     setLoading(true);
     setError('');
 
@@ -233,6 +261,34 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
           />
         </div>
 
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="terms"
+            checked={termsAccepted}
+            onChange={(e) => setTermsAccepted(e.target.checked)}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label htmlFor="terms" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+            By registering, you agree to YetAnotherWiki.com's{' '}
+            <button
+              type="button"
+              onClick={() => setTermsModalOpen(true)}
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              Terms and Conditions
+            </button>
+            {' '}and{' '}
+            <button
+              type="button"
+              onClick={() => setPrivacyModalOpen(true)}
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              Privacy Policy
+            </button>
+          </label>
+        </div>
+
         <button
           type="submit"
           disabled={loading || !isEmailValid || isCheckingEmail}
@@ -257,6 +313,7 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
 
         <div className="text-sm text-center text-gray-600 dark:text-gray-400">
           <button
+            type="button"
             onClick={() => {
               setError('');
               onBackToLogin();
@@ -267,6 +324,20 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
           </button>
         </div>
       </form>
+
+      <TermsModal
+        isOpen={termsModalOpen}
+        onClose={() => setTermsModalOpen(false)}
+        title="Terms and Conditions"
+        content={termsContent}
+      />
+
+      <TermsModal
+        isOpen={privacyModalOpen}
+        onClose={() => setPrivacyModalOpen(false)}
+        title="Privacy Policy"
+        content={privacyContent}
+      />
     </>
   );
 }

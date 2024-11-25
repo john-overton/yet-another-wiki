@@ -6,6 +6,7 @@ import ThemingSettings from './settings.theming';
 import LicensingSettings from './settings.licensing';
 import UserManagementSettings from './settings.users';
 import BackupSettings from './settings.backup';
+import TermsSettings from './settings.terms';
 import pkg from '../../package.json';
 
 const Settings = () => {
@@ -14,7 +15,8 @@ const Settings = () => {
     licensing: true,
     users: true,
     backup: true,
-    env: true
+    env: true,
+    terms: true
   });
   const [licenseType, setLicenseType] = useState(null);
   const [nextAuthUrl, setNextAuthUrl] = useState('');
@@ -180,6 +182,22 @@ const Settings = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Terms and Privacy Section */}
+      <div className="mb-4">
+        <div className="rounded-lg overflow-hidden border border-gray-700">
+          <SectionHeader 
+            title="Terms & Privacy Policy"
+            isExpanded={expandedSections.terms}
+            onToggle={() => toggleSection('terms')}
+          />
+          <div className={`transition-all duration-200 ${
+            expandedSections.terms ? 'opacity-100' : 'h-0 opacity-0 overflow-hidden'
+          }`}>
+            <TermsSettings />
           </div>
         </div>
       </div>
