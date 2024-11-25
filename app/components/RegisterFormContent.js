@@ -276,7 +276,7 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
               onClick={() => setTermsModalOpen(true)}
               className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
             >
-              Terms and Conditions
+              Terms of Service
             </button>
             {' '}and{' '}
             <button
@@ -328,7 +328,7 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
       <TermsModal
         isOpen={termsModalOpen}
         onClose={() => setTermsModalOpen(false)}
-        title="Terms and Conditions"
+        title="Terms of Service"
         content={termsContent}
       />
 

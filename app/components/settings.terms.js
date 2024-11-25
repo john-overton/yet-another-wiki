@@ -108,7 +108,7 @@ export default function TermsSettings() {
             className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
           >
             <i className="ri-file-text-line"></i>
-            Edit Terms and Conditions
+            Edit Terms of Service
           </button>
         </div>
 
