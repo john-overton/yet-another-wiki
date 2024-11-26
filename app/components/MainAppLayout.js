@@ -15,7 +15,6 @@ import MarkdownRenderer from './MarkdownRenderer';
 import TrashBin from './TrashBin';
 import Footer from './Footer';
 import Header from './Header';
-import PromotionBanner from './PromotionBanner';
 
 const openSans = Open_Sans({
   subsets: ['latin'],
@@ -437,7 +436,7 @@ const MainAppLayout = () => {
           isEditing={isEditing}
         />
       </div>
-      <PromotionBanner />
+      
       <div className="flex flex-1 relative pt-12">
         {!isEditing && (
           <div className={`sticky top-12 h-[calc(100vh-3rem)] transition-all duration-300 ease-in-out ${isSidebarVisible ? (session ? 'w-[20rem]' : 'w-fit max-w-[16rem]') : 'w-0'} overflow-hidden`}>
@@ -445,17 +444,19 @@ const MainAppLayout = () => {
           </div>
         )}
         <main className={`flex-1 bg-background-light overflow-y-auto ${isEditing ? 'w-full' : ''}`}>
-          <div className={`mx-auto ${isEditing ? '' : 'px-6'}`}>
+          <div className={`mx-auto ${isEditing ? '' : 'px-6'} relative`}>
             {isTrashBinVisible ? (
               <TrashBin onDelete={handleDeleteClick} />
             ) : (
               selectedFile && !isEditing ? (
-                <MarkdownRenderer 
-                  content={fileContent} 
-                  currentPage={selectedFile}
-                  pages={fileStructure}
-                  session={session}
-                />
+                <>
+                  <MarkdownRenderer 
+                    content={fileContent} 
+                    currentPage={selectedFile}
+                    pages={fileStructure}
+                    session={session}
+                  />
+                </>
               ) : (
                 renderEditor() || <div>Select a file from the sidebar</div>
               )

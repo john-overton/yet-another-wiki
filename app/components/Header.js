@@ -9,6 +9,7 @@ import UserButton from './UserButton';
 import SearchModal from './SearchModal';
 import Logo from './Logo';
 import LoginModal from './LoginModal';
+import PromotionBanner from './PromotionBanner';
 
 const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isEditing }) => {
   const [mounted, setMounted] = useState(false);
@@ -154,10 +155,14 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
           )}
         </div>
 
-        <div className="flex flex-1 items-center justify-end ml-4">
+        <div className="flex flex-1 items-center justify-end gap-4 ml-4">
+          <div className="flex-shrink-0">
+            <PromotionBanner />
+          </div>
+
           {/* Links Container */}
           {links.length > 0 && (
-            <div className="relative flex items-center mr-4" ref={menuRef}>
+            <div className="relative flex items-center" ref={menuRef}>
               {shouldCollapseLinks ? (
                 <div className="relative">
                   <MenuButton 

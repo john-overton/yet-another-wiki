@@ -102,6 +102,7 @@ export default function PromotionBanner() {
   const [activePromotion, setActivePromotion] = useState(null);
   const [showBanner, setShowBanner] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
     const checkActivePromotion = async () => {
@@ -136,6 +137,14 @@ export default function PromotionBanner() {
     };
 
     checkActivePromotion();
+
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 1000);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
   const handleClose = async () => {
@@ -173,20 +182,24 @@ export default function PromotionBanner() {
       <motion.div 
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className="fixed top-12 left-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600 text-white py-3 px-6 cursor-pointer z-[1998] flex items-center gap-3 rounded-r-xl shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+        className={`bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600 text-white cursor-pointer flex items-center gap-3 rounded-xl shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 ${isSmallScreen ? 'p-2' : 'py-2 px-4'}`}
         onClick={handleBannerClick}
       >
         <span className="text-2xl animate-bounce">🎁</span>
-        <span className="text-sm font-medium">{activePromotion.description}</span>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleClose();
-          }}
-          className="ml-4 text-white/80 hover:text-white transition-colors"
-        >
-          <i className="ri-close-line"></i>
-        </button>
+        {!isSmallScreen && (
+          <>
+            <span className="text-sm font-medium whitespace-nowrap">{activePromotion.description}</span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClose();
+              }}
+              className="ml-2 text-white/80 hover:text-white transition-colors"
+            >
+              <i className="ri-close-line"></i>
+            </button>
+          </>
+        )}
       </motion.div>
 
       <AnimatePresence>
@@ -198,5 +211,5 @@ export default function PromotionBanner() {
         )}
       </AnimatePresence>
     </>
-  );
-}
+ );
+ }
