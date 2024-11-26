@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import ReactConfetti from 'react-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
+import LoginModal from './LoginModal';
 
 const PromotionModal = ({ promotion, onClose }) => {
   const [showConfetti, setShowConfetti] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   
   if (!promotion) return null;
 
@@ -84,8 +86,16 @@ const PromotionModal = ({ promotion, onClose }) => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="flex justify-end"
+          className="flex justify-end gap-3"
         >
+          {promotion.type === 'giveaway' && (
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+            >
+              Claim Your Pro License ✨
+            </button>
+          )}
           <button
             onClick={onClose}
             className="px-6 py-3 bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
@@ -94,6 +104,16 @@ const PromotionModal = ({ promotion, onClose }) => {
           </button>
         </motion.div>
       </motion.div>
+
+      {showLoginModal && (
+        <LoginModal 
+          isOpen={true} 
+          onClose={() => {
+            setShowLoginModal(false);
+            onClose();
+          }}
+        />
+      )}
     </div>
   );
 };

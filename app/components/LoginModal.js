@@ -6,19 +6,81 @@ import { useRouter } from 'next/navigation';
 import RegisterFormContent from './RegisterFormContent';
 import PasswordResetFormContent from './PasswordResetFormContent';
 import SecretQuestionsFormContent from './SecretQuestionsFormContent';
+import { motion, AnimatePresence } from 'framer-motion';
+import ReactConfetti from 'react-confetti';
 
-/**
- * @typedef {Object} LoginModalProps
- * @property {boolean} [isOpen]
- * @property {() => void} [onClose]
- * @property {boolean} [isStandalone]
- * @property {Record<string, any>} [providers]
- */
+const LicenseAwardModal = ({ isOpen, onClose, licenseKey }) => {
+  const [showConfetti, setShowConfetti] = useState(true);
+  
+  if (!isOpen) return null;
 
-/**
- * @param {LoginModalProps} props
- */
-export default function LoginModal({ isOpen, onClose, isStandalone = false, providers = null }) {
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]">
+      {showConfetti && <ReactConfetti 
+        recycle={false}
+        numberOfPieces={200}
+        onConfettiComplete={() => setShowConfetti(false)}
+      />}
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-gradient-to-br from-pink-100 via-white to-blue-100 dark:from-indigo-950 dark:via-gray-900 dark:to-purple-950 rounded-2xl p-8 w-full max-w-md shadow-2xl border border-white/20 backdrop-blur"
+      >
+        <div className="flex justify-between items-center mb-6">
+          <motion.h3 
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-blue-600 dark:from-pink-400 dark:to-blue-400 bg-clip-text text-transparent flex items-center gap-2"
+          >
+            🎉 Congratulations! ✨
+          </motion.h3>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+          >
+            <i className="ri-close-line text-2xl"></i>
+          </button>
+        </div>
+
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="prose dark:prose-invert max-w-none mb-6"
+        >
+          <p className="text-gray-600 dark:text-gray-300">
+            You've been awarded a Pro License! 🌟
+          </p>
+          <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 p-4 rounded-xl my-4 border border-white/20">
+            <p className="text-sm font-mono text-gray-600 dark:text-gray-300 break-all">
+              {licenseKey}
+            </p>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            You can view your license key at any time in your Account Settings 👤
+          </p>
+        </motion.div>
+
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="flex justify-end"
+        >
+          <button
+            onClick={onClose}
+            className="px-6 py-3 bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+          >
+            Got it! ✨
+          </button>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+};
+
+export default function LoginModal({ isOpen, onClose, isStandalone = false, providers = null, fromPromotion = false }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -27,9 +89,11 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
   const [activeForm, setActiveForm] = useState('login');
   const [licenseType, setLicenseType] = useState(null);
   const [preventUserRegistration, setPreventUserRegistration] = useState(false);
+  const [showLicenseModal, setShowLicenseModal] = useState(false);
+  const [licenseKey, setLicenseKey] = useState('');
+  const [hasProLicense, setHasProLicense] = useState(false);
   const router = useRouter();
 
-  // Fetch license type and general settings when modal is opened
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -57,7 +121,6 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
     }
   }, [isOpen, isStandalone]);
 
-  // Reset form when modal is opened
   useEffect(() => {
     if (isOpen || isStandalone) {
       setEmail('');
@@ -66,6 +129,8 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
       setSuccessMessage('');
       setLoading(false);
       setActiveForm('login');
+      setShowLicenseModal(false);
+      setLicenseKey('');
     }
   }, [isOpen, isStandalone]);
 
@@ -90,7 +155,6 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
         return;
       }
 
-      // Add a small delay to allow the session to be established
       await new Promise(resolve => setTimeout(resolve, 500));
 
       try {
@@ -104,6 +168,66 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
                                      !userData.secret_question_2_id && 
                                      !userData.secret_question_3_id;
 
+        // Check if user has a pro license
+        const licenseResponse = await fetch(`https://lic.yetanotherwiki.com/api/license/lookup/${encodeURIComponent(email)}`);
+        const licenseData = await licenseResponse.json();
+        const hasExistingProLicense = licenseData?.license_type === 'pro' && licenseData?.active;
+        setHasProLicense(hasExistingProLicense);
+
+        // If this login is from a promotion and user doesn't have a pro license
+        if (fromPromotion) {
+          if (hasExistingProLicense) {
+            setError('You already have an active Pro License');
+            setLoading(false);
+            return;
+          }
+
+          try {
+            const promotionResponse = await fetch('/api/settings/promotions');
+            const promotions = await promotionResponse.json();
+            const activeGiveaway = promotions.find(p => 
+              p.type === 'giveaway' && 
+              new Date(p.startDate) <= new Date() && 
+              new Date(p.endDate) >= new Date() &&
+              p.remainingGiveaways > 0
+            );
+
+            if (activeGiveaway) {
+              // Generate license for the user
+              const licenseResponse = await fetch('/api/license', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+              });
+
+              if (licenseResponse.ok) {
+                const licenseData = await licenseResponse.json();
+                if (licenseData.licenseKey) {
+                  setLicenseKey(licenseData.licenseKey);
+
+                  // Update promotion stats
+                  await fetch('/api/settings/promotions', {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      id: activeGiveaway.id,
+                      action: 'register'
+                    }),
+                  });
+
+                  setShowLicenseModal(true);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error handling promotion:', error);
+          }
+        }
+
         if (hasNoSecurityQuestions) {
           setActiveForm('security');
         } else {
@@ -113,8 +237,10 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
               'Content-Type': 'application/json',
             },
           });
-          if (!isStandalone && onClose) onClose();
-          router.push('/');
+          if (!showLicenseModal) {
+            if (!isStandalone && onClose) onClose();
+            router.push('/');
+          }
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -267,29 +393,43 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
     </div>
   );
 
-  if (isStandalone) {
-    return (
-      <div className="w-full max-w-sm mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl">
-        {content}
-      </div>
-    );
-  }
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
-      <div className="absolute inset-0 bg-black bg-opacity-50" />
-      <div 
-        className="relative w-full max-w-sm bg-white dark:bg-gray-800 rounded-lg shadow-xl" 
-        onClick={e => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 z-10"
-        >
-          <i className="ri-close-line text-xl"></i>
-        </button>
-        {content}
-      </div>
-    </div>
+    <>
+      {isStandalone ? (
+        <div className="w-full max-w-sm mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl">
+          {content}
+        </div>
+      ) : (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
+          <div className="absolute inset-0 bg-black bg-opacity-50" />
+          <div 
+            className="relative w-full max-w-sm bg-white dark:bg-gray-800 rounded-lg shadow-xl" 
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 z-10"
+            >
+              <i className="ri-close-line text-xl"></i>
+            </button>
+            {content}
+          </div>
+        </div>
+      )}
+
+      <AnimatePresence>
+        {showLicenseModal && (
+          <LicenseAwardModal
+            isOpen={true}
+            onClose={() => {
+              setShowLicenseModal(false);
+              if (!isStandalone && onClose) onClose();
+              router.push('/');
+            }}
+            licenseKey={licenseKey}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 }
