@@ -253,14 +253,15 @@ export default function PromotionsSettings() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
+        body: JSON.stringify(editingPromotion ? {
           ...promotionData,
-          id: editingPromotion?.id
-        }),
+          id: editingPromotion.id
+        } : promotionData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save promotion');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save promotion');
       }
 
       await loadPromotions();
@@ -268,7 +269,7 @@ export default function PromotionsSettings() {
       setEditingPromotion(null);
     } catch (err) {
       console.error('Error saving promotion:', err);
-      setError('Failed to save promotion');
+      setError(err.message || 'Failed to save promotion');
     }
   };
 
