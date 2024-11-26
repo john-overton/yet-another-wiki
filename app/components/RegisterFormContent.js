@@ -4,6 +4,79 @@ import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import TermsModal from './TermsModal';
+import ReactConfetti from 'react-confetti';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const LicenseAwardModal = ({ isOpen, onClose, licenseKey }) => {
+  const [showConfetti, setShowConfetti] = useState(true);
+  
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]">
+      {showConfetti && <ReactConfetti 
+        recycle={false}
+        numberOfPieces={200}
+        onConfettiComplete={() => setShowConfetti(false)}
+      />}
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-gradient-to-br from-pink-100 via-white to-blue-100 dark:from-indigo-950 dark:via-gray-900 dark:to-purple-950 rounded-2xl p-8 w-full max-w-md shadow-2xl border border-white/20 backdrop-blur"
+      >
+        <div className="flex justify-between items-center mb-6">
+          <motion.h3 
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-blue-600 dark:from-pink-400 dark:to-blue-400 bg-clip-text text-transparent flex items-center gap-2"
+          >
+            🎉 Congratulations! ✨
+          </motion.h3>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+          >
+            <i className="ri-close-line text-2xl"></i>
+          </button>
+        </div>
+
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="prose dark:prose-invert max-w-none mb-6"
+        >
+          <p className="text-gray-600 dark:text-gray-300">
+            You've been awarded a Pro License! 🌟
+          </p>
+          <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 p-4 rounded-xl my-4 border border-white/20">
+            <p className="text-sm font-mono text-gray-600 dark:text-gray-300 break-all">
+              {licenseKey}
+            </p>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            You can view your license key at any time by clicking on your user avatar and selecting "Account Settings" 👤
+          </p>
+        </motion.div>
+
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="flex justify-end"
+        >
+          <button
+            onClick={onClose}
+            className="px-6 py-3 bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+          >
+            Got it! ✨
+          </button>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+};
 
 export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }) {
   const [formData, setFormData] = useState({
@@ -22,6 +95,9 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [termsContent, setTermsContent] = useState('');
   const [privacyContent, setPrivacyContent] = useState('');
+  const [activePromotion, setActivePromotion] = useState(null);
+  const [showLicenseModal, setShowLicenseModal] = useState(false);
+  const [licenseKey, setLicenseKey] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -37,7 +113,46 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
         console.error('Error loading terms:', error);
       }
     };
+    
+    const checkActivePromotion = async () => {
+      try {
+        const response = await fetch('/api/settings/promotions');
+        if (response.ok) {
+          const promotions = await response.json();
+          console.log('Found promotions:', promotions); // Debug log
+          
+          const now = new Date();
+          const active = promotions.find(promo => {
+            const isActive = 
+              new Date(promo.startDate) <= now && 
+              new Date(promo.endDate) >= now &&
+              promo.type === 'giveaway' &&
+              (promo.remainingGiveaways || 0) > 0;
+            
+            console.log('Checking promotion:', { // Debug log
+              id: promo.id,
+              type: promo.type,
+              startDate: promo.startDate,
+              endDate: promo.endDate,
+              remainingGiveaways: promo.remainingGiveaways,
+              isActive
+            });
+            
+            return isActive;
+          });
+
+          console.log('Active promotion:', active); // Debug log
+          if (active) {
+            setActivePromotion(active);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking active promotions:', error);
+      }
+    };
+
     loadTermsAndPrivacy();
+    checkActivePromotion();
   }, []);
 
   // Email validation regex
@@ -110,6 +225,26 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
     return () => clearTimeout(timeoutId);
   };
 
+  const updatePromotionStats = async () => {
+    if (!activePromotion) return;
+
+    try {
+      console.log('Updating promotion stats for:', activePromotion.id); // Debug log
+      await fetch('/api/settings/promotions', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: activePromotion.id,
+          action: 'register'
+        }),
+      });
+    } catch (error) {
+      console.error('Error updating promotion stats:', error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -151,19 +286,40 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
         throw new Error(errorData.message || 'Failed to create account');
       }
 
-      // Generate license for the new user
-      const licenseResponse = await fetch('/api/license', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email
-        }),
-      });
+      // Update promotion stats if there's an active promotion
+      if (activePromotion) {
+        console.log('Active promotion during registration:', activePromotion); // Debug log
+        await updatePromotionStats();
+      }
 
-      if (!licenseResponse.ok) {
-        console.error('Failed to generate license, but user was created');
+      // Generate license for the new user
+      let licenseData = null;
+      try {
+        console.log('Requesting license generation...'); // Debug log
+        const licenseResponse = await fetch('/api/license', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email
+          }),
+        });
+
+        if (licenseResponse.ok) {
+          licenseData = await licenseResponse.json();
+          console.log('License response:', licenseData); // Debug log
+          if (licenseData.licenseKey) { // Changed from .key to .licenseKey
+            console.log('License key received:', licenseData.licenseKey); // Debug log
+            setLicenseKey(licenseData.licenseKey); // Changed from .key to .licenseKey
+          } else {
+            console.log('No license key in response:', licenseData); // Debug log
+          }
+        } else {
+          console.error('License response not OK:', await licenseResponse.text());
+        }
+      } catch (error) {
+        console.error('Error generating license:', error);
       }
 
       // After successful registration, sign in the user
@@ -177,8 +333,25 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
         setError('Account created but failed to log in. Please try logging in manually.');
         onBackToLogin();
       } else {
-        // Now that the user is signed in, proceed to security questions
-        onRegisterSuccess();
+        // If this was a giveaway promotion and we have a license key, show the modal
+        console.log('Checking conditions for license modal:', { // Debug log
+          hasActivePromotion: !!activePromotion,
+          promotionType: activePromotion?.type,
+          hasLicenseKey: !!licenseData?.licenseKey, // Changed from .key to .licenseKey
+          licenseKey: licenseData?.licenseKey // Changed from .key to .licenseKey
+        });
+
+        if (activePromotion?.type === 'giveaway' && licenseData?.licenseKey) { // Changed from .key to .licenseKey
+          console.log('Showing license modal with key:', licenseData.licenseKey); // Debug log
+          setShowLicenseModal(true);
+        } else {
+          console.log('Not showing license modal because:', { // Debug log
+            noActivePromotion: !activePromotion,
+            notGiveaway: activePromotion?.type !== 'giveaway',
+            noLicenseKey: !licenseData?.licenseKey // Changed from .key to .licenseKey
+          });
+          onRegisterSuccess();
+        }
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -354,6 +527,17 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
         title="Privacy Policy"
         content={privacyContent}
       />
+
+      <AnimatePresence>
+        <LicenseAwardModal
+          isOpen={showLicenseModal}
+          onClose={() => {
+            setShowLicenseModal(false);
+            onRegisterSuccess();
+          }}
+          licenseKey={licenseKey}
+        />
+      </AnimatePresence>
     </>
   );
 }
