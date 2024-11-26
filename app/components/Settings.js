@@ -7,6 +7,7 @@ import LicensingSettings from './settings.licensing';
 import UserManagementSettings from './settings.users';
 import BackupSettings from './settings.backup';
 import TermsSettings from './settings.terms';
+import PromotionsSettings from './settings.promotions';
 import pkg from '../../package.json';
 
 const Settings = () => {
@@ -16,7 +17,8 @@ const Settings = () => {
     users: true,
     backup: true,
     env: true,
-    terms: true
+    terms: true,
+    promotions: true
   });
   const [licenseType, setLicenseType] = useState(null);
   const [nextAuthUrl, setNextAuthUrl] = useState('');
@@ -198,6 +200,22 @@ const Settings = () => {
             expandedSections.terms ? 'opacity-100' : 'h-0 opacity-0 overflow-hidden'
           }`}>
             <TermsSettings />
+          </div>
+        </div>
+      </div>
+
+      {/* Promotions Section */}
+      <div className="mb-4">
+        <div className="rounded-lg overflow-hidden border border-gray-700">
+          <SectionHeader 
+            title="Promotions"
+            isExpanded={expandedSections.promotions}
+            onToggle={() => toggleSection('promotions')}
+          />
+          <div className={`transition-all duration-200 ${
+            expandedSections.promotions ? 'opacity-100' : 'h-0 opacity-0 overflow-hidden'
+          }`}>
+            <PromotionsSettings />
           </div>
         </div>
       </div>

@@ -128,6 +128,7 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
     }
 
     try {
+      // First create the user account
       const createResponse = await fetch('/api/users/create', {
         method: 'POST',
         headers: {
@@ -145,24 +146,39 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
         }),
       });
 
-      if (createResponse.ok) {
-        // After successful registration, sign in the user
-        const result = await signIn('credentials', {
-          redirect: false,
-          email: formData.email,
-          password: formData.password,
-        });
-
-        if (result.error) {
-          setError('Account created but failed to log in. Please try logging in manually.');
-          onBackToLogin();
-        } else {
-          // Now that the user is signed in, proceed to security questions
-          onRegisterSuccess();
-        }
-      } else {
+      if (!createResponse.ok) {
         const errorData = await createResponse.json();
-        setError(errorData.message || 'Failed to create account');
+        throw new Error(errorData.message || 'Failed to create account');
+      }
+
+      // Generate license for the new user
+      const licenseResponse = await fetch('/api/license', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email
+        }),
+      });
+
+      if (!licenseResponse.ok) {
+        console.error('Failed to generate license, but user was created');
+      }
+
+      // After successful registration, sign in the user
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (result.error) {
+        setError('Account created but failed to log in. Please try logging in manually.');
+        onBackToLogin();
+      } else {
+        // Now that the user is signed in, proceed to security questions
+        onRegisterSuccess();
       }
     } catch (error) {
       console.error('Registration error:', error);

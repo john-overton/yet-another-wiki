@@ -15,6 +15,7 @@ import MarkdownRenderer from './MarkdownRenderer';
 import TrashBin from './TrashBin';
 import Footer from './Footer';
 import Header from './Header';
+import PromotionBanner from './PromotionBanner';
 
 const openSans = Open_Sans({
   subsets: ['latin'],
@@ -436,6 +437,7 @@ const MainAppLayout = () => {
           isEditing={isEditing}
         />
       </div>
+      <PromotionBanner />
       <div className="flex flex-1 relative pt-12">
         {!isEditing && (
           <div className={`sticky top-12 h-[calc(100vh-3rem)] transition-all duration-300 ease-in-out ${isSidebarVisible ? (session ? 'w-[20rem]' : 'w-fit max-w-[16rem]') : 'w-0'} overflow-hidden`}>

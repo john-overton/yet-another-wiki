@@ -18,12 +18,37 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
   const [email, setEmail] = useState('');
   const [cropImage, setCropImage] = useState(null);
   const [timestamp, setTimestamp] = useState(Date.now());
+  const [licenses, setLicenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [copiedKey, setCopiedKey] = useState(null);
 
   useEffect(() => {
     if (user) {
       setAvatarPreview(user.avatar || null);
       setName(user.name || '');
       setEmail(user.email || '');
+      
+      // Fetch licenses when user is available
+      const fetchLicenses = async () => {
+        if (!user?.email) return;
+        
+        try {
+          const response = await fetch(`/api/license?email=${encodeURIComponent(user.email)}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch licenses');
+          }
+          const data = await response.json();
+          setLicenses(data.licenses || []);
+        } catch (err) {
+          setError('Failed to load licenses');
+          console.error('Error fetching licenses:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchLicenses();
     }
   }, [user]);
 
@@ -45,6 +70,16 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
   }, [isOpen, user]);
 
   if (!isOpen) return null;
+
+  const handleCopyLicense = async (licenseKey) => {
+    try {
+      await navigator.clipboard.writeText(licenseKey);
+      setCopiedKey(licenseKey);
+      setTimeout(() => setCopiedKey(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy license key:', err);
+    }
+  };
 
   const resizeImage = (file) => {
     return new Promise((resolve) => {
@@ -184,7 +219,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
       }
 
       setMessage({ type: 'success', content: 'Settings updated successfully' });
-      
+
       // Dispatch event to update avatar in UserButton
       const event = new Event('user-avatar-updated');
       window.dispatchEvent(event);
@@ -373,6 +408,51 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
                 required
               />
+            </div>
+
+            {/* License Section */}
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
+              <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">Your Licenses</h3>
+              {loading ? (
+                <div className="text-gray-600 dark:text-gray-400">Loading licenses...</div>
+              ) : error ? (
+                <div className="text-red-500 dark:text-red-400">{error}</div>
+              ) : licenses.length === 0 ? (
+                <div className="text-gray-600 dark:text-gray-400">No licenses found</div>
+              ) : (
+                <div className="space-y-2">
+                  {licenses.map((license, index) => (
+                    <div 
+                      key={index}
+                      className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                    >
+                      <div>
+                        <span className={`inline-block px-2 py-1 text-xs rounded-full ${
+                          license.type === 'pro' 
+                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                        } mr-2`}>
+                          {license.type.toUpperCase()}
+                        </span>
+                        <span className="font-mono text-sm text-gray-600 dark:text-gray-300">
+                          {license.key}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleCopyLicense(license.key)}
+                        className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        title="Copy license key"
+                      >
+                        {copiedKey === license.key ? (
+                          <i className="ri-check-line"></i>
+                        ) : (
+                          <i className="ri-file-copy-line"></i>
+                        )}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <button
