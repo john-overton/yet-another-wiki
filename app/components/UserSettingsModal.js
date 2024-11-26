@@ -34,14 +34,32 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
         if (!user?.email) return;
         
         try {
-          const response = await fetch(`/api/license?email=${encodeURIComponent(user.email)}`);
+          const response = await fetch(`https://lic.yetanotherwiki.com/api/license/lookup/${encodeURIComponent(user.email)}`);
+          
+          if (response.status === 429) {
+            const data = await response.json();
+            throw new Error(`Rate limit exceeded. Please try again later. ${data.nextValidRequestTime ? `Next valid request time: ${new Date(data.nextValidRequestTime).toLocaleString()}` : ''}`);
+          }
+          
           if (!response.ok) {
+            if (response.status === 404) {
+              setLicenses([]);
+              setLoading(false);
+              return;
+            }
             throw new Error('Failed to fetch licenses');
           }
+          
           const data = await response.json();
-          setLicenses(data.licenses || []);
+          // Convert the API response to match our expected format
+          const formattedLicense = {
+            type: data.license_type,
+            key: data.license_key,
+            active: data.active
+          };
+          setLicenses([formattedLicense]);
         } catch (err) {
-          setError('Failed to load licenses');
+          setError(err.message || 'Failed to load licenses');
           console.error('Error fetching licenses:', err);
         } finally {
           setLoading(false);
