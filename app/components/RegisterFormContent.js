@@ -48,7 +48,7 @@ const LicenseAwardModal = ({ isOpen, onClose, licenseKey }) => {
           className="prose dark:prose-invert max-w-none mb-6"
         >
           <p className="text-gray-600 dark:text-gray-300">
-            You've been awarded a Pro License! 🌟
+            You&apos;ve been awarded a Pro License! 🌟
           </p>
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 p-4 rounded-xl my-4 border border-white/20">
             <p className="text-sm font-mono text-gray-600 dark:text-gray-300 break-all">
@@ -56,7 +56,7 @@ const LicenseAwardModal = ({ isOpen, onClose, licenseKey }) => {
             </p>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-300">
-            You can view your license key at any time by clicking on your user avatar and selecting "Account Settings" 👤
+            You can view your license key at any time by clicking on your user avatar and selecting &quot;Account Settings&quot; 👤
           </p>
         </motion.div>
 
@@ -459,7 +459,7 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
           />
           <label htmlFor="terms" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-            By registering, you agree to YetAnotherWiki.com's{' '}
+            By registering, you agree to YetAnotherWiki.com&apos;s{' '}
             <button
               type="button"
               onClick={() => setTermsModalOpen(true)}

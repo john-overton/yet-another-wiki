@@ -50,7 +50,7 @@ const LicenseAwardModal = ({ isOpen, onClose, licenseKey }) => {
           className="prose dark:prose-invert max-w-none mb-6"
         >
           <p className="text-gray-600 dark:text-gray-300">
-            You've been awarded a Pro License! 🌟
+            You&apos;ve been awarded a Pro License! 🌟
           </p>
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 p-4 rounded-xl my-4 border border-white/20">
             <p className="text-sm font-mono text-gray-600 dark:text-gray-300 break-all">
