@@ -15,6 +15,7 @@ const ReviewCarousel = () => {
   const [reviews, setReviews] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [slideDirection, setSlideDirection] = useState('left');
 
@@ -26,6 +27,7 @@ const ReviewCarousel = () => {
           const data = await response.json();
           setReviews(data.reviews);
           setAverageRating(data.averageRating);
+          setTotalCount(data.totalCount);
         }
       } catch (error) {
         console.error('Error fetching reviews:', error);
@@ -92,7 +94,7 @@ const ReviewCarousel = () => {
           ))}
         </div>
         <div className="text-gray-600 dark:text-gray-400">
-          Based on {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
+          Based on {totalCount} {totalCount === 1 ? 'review' : 'reviews'}
         </div>
       </div>
 

@@ -5,24 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    // Get all reviews with user information
-    const reviews = await prisma.userReview.findMany({
-      include: {
-        user: {
-          select: {
-            name: true,
-            avatar: true,
-            is_pro: true,  // Added is_pro field
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: 5, // Limit to 5 reviews
-    });
-
-    // Calculate average rating
+    // Get all reviews first to calculate total count and average
     const allReviews = await prisma.userReview.findMany({
       select: {
         rating: true,
@@ -33,9 +16,41 @@ export async function GET() {
       ? allReviews.reduce((acc, review) => acc + review.rating, 0) / allReviews.length
       : 0;
 
+    // Get total count of reviews
+    const totalCount = allReviews.length;
+
+    // Get 5 random reviews for display
+    const randomReviews = await prisma.$queryRaw`
+      SELECT 
+        "UserReview".*,
+        "User"."name",
+        "User"."avatar",
+        "User"."is_pro"
+      FROM "UserReview"
+      LEFT JOIN "User" ON "UserReview"."userId" = "User"."id"
+      ORDER BY RANDOM()
+      LIMIT 5
+    `;
+
+    // Format the reviews to match the expected structure
+    const formattedReviews = randomReviews.map(review => ({
+      id: review.id,
+      rating: review.rating,
+      review: review.review,
+      createdAt: review.createdAt,
+      updatedAt: review.updatedAt,
+      userId: review.userId,
+      user: {
+        name: review.name,
+        avatar: review.avatar,
+        is_pro: review.is_pro
+      }
+    }));
+
     return NextResponse.json({
-      reviews,
+      reviews: formattedReviews,
       averageRating,
+      totalCount
     });
   } catch (error) {
     console.error('Error fetching reviews:', error);
