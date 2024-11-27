@@ -34,6 +34,10 @@ const ReviewCarousel = () => {
     };
 
     fetchReviews();
+  }, []);
+
+  useEffect(() => {
+    if (reviews.length === 0) return;
 
     // Auto-advance carousel every 5 seconds
     const interval = setInterval(() => {
@@ -43,7 +47,7 @@ const ReviewCarousel = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [reviews]); // Added reviews to dependency array
 
   const handlePrevious = () => {
     setCurrentIndex((current) => 
