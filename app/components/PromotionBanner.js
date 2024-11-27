@@ -5,12 +5,12 @@ import { useSession } from 'next-auth/react';
 import ReactConfetti from 'react-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoginModal from './LoginModal';
-import PromotionalRegisterFormContent from './PromotionalRegisterFormContent';
+import PromotionalRegisterModal from './PromotionalRegisterModal';
 
-const PromotionModal = ({ promotion, onClose }) => {
+const PromotionModal = ({ promotion, onClose, hasProLicense }) => {
   const [showConfetti, setShowConfetti] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterForm, setShowRegisterForm] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
   
   if (!promotion) return null;
 
@@ -31,27 +31,22 @@ const PromotionModal = ({ promotion, onClose }) => {
     }
   };
 
-  const handleRegisterSuccess = () => {
-    setShowRegisterForm(false);
-    onClose();
-  };
-
-  if (showRegisterForm) {
+  if (showRegisterModal) {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]" onClick={() => setShowRegisterForm(false)}>
-        <div className="w-full max-w-md relative" onClick={e => e.stopPropagation()}>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]">
+        <div className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-xl">
           <button
-            onClick={() => setShowRegisterForm(false)}
+            onClick={onClose}
             className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 z-10"
           >
             <i className="ri-close-line text-xl"></i>
           </button>
-          <PromotionalRegisterFormContent
-            onBackToLogin={() => {
-              setShowRegisterForm(false);
+          <PromotionalRegisterModal
+            onClose={onClose}
+            onShowLogin={() => {
+              setShowRegisterModal(false);
               setShowLoginModal(true);
             }}
-            onRegisterSuccess={handleRegisterSuccess}
           />
         </div>
       </div>
@@ -60,7 +55,7 @@ const PromotionModal = ({ promotion, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]" onClick={onClose}>
-      {showConfetti && <ReactConfetti 
+      {showConfetti && !hasProLicense && <ReactConfetti 
         recycle={false}
         numberOfPieces={200}
         onConfettiComplete={() => setShowConfetti(false)}
@@ -94,12 +89,19 @@ const PromotionModal = ({ promotion, onClose }) => {
           transition={{ delay: 0.1 }}
           className="prose dark:prose-invert max-w-none mb-6"
         >
-          {promotion.details.split('\n').map((paragraph, index) => (
-            <p key={index} className="text-gray-600 dark:text-gray-300">{paragraph}</p>
-          ))}
+          {hasProLicense ? (
+            <p className="text-gray-600 dark:text-gray-300">
+              You already have a Pro License! 🌟<br /><br />
+              Know someone who could benefit from Yet Another Wiki? Share this promotion with them and help them get started with a Pro License! 🎁
+            </p>
+          ) : (
+            promotion.details.split('\n').map((paragraph, index) => (
+              <p key={index} className="text-gray-600 dark:text-gray-300">{paragraph}</p>
+            ))
+          )}
         </motion.div>
 
-        {promotion.type === 'giveaway' && (
+        {promotion.type === 'giveaway' && !hasProLicense && (
           <motion.div 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -122,12 +124,17 @@ const PromotionModal = ({ promotion, onClose }) => {
           {promotion.type === 'giveaway' && (
             <button
               onClick={() => {
-                handleClick();
-                setShowRegisterForm(true);
+                if (!hasProLicense) {
+                  handleClick();
+                  setShowRegisterModal(true);
+                }
               }}
-              className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+              disabled={hasProLicense}
+              className={`px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 ${
+                hasProLicense ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Claim Your Pro License ✨
+              {hasProLicense ? 'Already Claimed ✨' : 'Claim Your Pro License ✨'}
             </button>
           )}
           <button
@@ -205,9 +212,7 @@ export default function PromotionBanner() {
     };
 
     checkLicenseStatus();
-    if (!hasProLicense) {
-      checkActivePromotion();
-    }
+    checkActivePromotion();
 
     const checkScreenSize = () => {
       setIsSmallScreen(window.innerWidth < 1000);
@@ -216,7 +221,7 @@ export default function PromotionBanner() {
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
-  }, [session, hasProLicense]);
+  }, [session]);
 
   const handleCloseBanner = async () => {
     if (!activePromotion) return;
@@ -251,7 +256,7 @@ export default function PromotionBanner() {
     setShowModal(true);
   };
 
-  if (!activePromotion || !showBanner || hasProLicense) return null;
+  if (!activePromotion || !showBanner) return null;
 
   return (
     <>
@@ -264,7 +269,9 @@ export default function PromotionBanner() {
         <span className="text-2xl animate-bounce">🎁</span>
         {!isSmallScreen && (
           <>
-            <span className="text-sm font-medium whitespace-nowrap">{activePromotion.description}</span>
+            <span className="text-sm font-medium whitespace-nowrap">
+              {hasProLicense ? 'Share this Pro License offer with a friend!' : activePromotion.description}
+            </span>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -283,6 +290,7 @@ export default function PromotionBanner() {
           <PromotionModal
             promotion={activePromotion}
             onClose={handleCloseModal}
+            hasProLicense={hasProLicense}
           />
         )}
       </AnimatePresence>
