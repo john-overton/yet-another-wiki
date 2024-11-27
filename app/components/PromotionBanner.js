@@ -1,13 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import ReactConfetti from 'react-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoginModal from './LoginModal';
+import PromotionalRegisterFormContent from './PromotionalRegisterFormContent';
 
 const PromotionModal = ({ promotion, onClose }) => {
   const [showConfetti, setShowConfetti] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
   
   if (!promotion) return null;
 
@@ -28,8 +31,35 @@ const PromotionModal = ({ promotion, onClose }) => {
     }
   };
 
+  const handleRegisterSuccess = () => {
+    setShowRegisterForm(false);
+    onClose();
+  };
+
+  if (showRegisterForm) {
+    return (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]" onClick={() => setShowRegisterForm(false)}>
+        <div className="w-full max-w-md relative" onClick={e => e.stopPropagation()}>
+          <button
+            onClick={() => setShowRegisterForm(false)}
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 z-10"
+          >
+            <i className="ri-close-line text-xl"></i>
+          </button>
+          <PromotionalRegisterFormContent
+            onBackToLogin={() => {
+              setShowRegisterForm(false);
+              setShowLoginModal(true);
+            }}
+            onRegisterSuccess={handleRegisterSuccess}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]" onClick={onClose}>
       {showConfetti && <ReactConfetti 
         recycle={false}
         numberOfPieces={200}
@@ -40,6 +70,7 @@ const PromotionModal = ({ promotion, onClose }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         className="bg-gradient-to-br from-pink-100 via-white to-blue-100 dark:from-indigo-950 dark:via-gray-900 dark:to-purple-950 rounded-2xl p-8 w-full max-w-md shadow-2xl border border-white/20 backdrop-blur"
+        onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
           <motion.h3 
@@ -90,7 +121,10 @@ const PromotionModal = ({ promotion, onClose }) => {
         >
           {promotion.type === 'giveaway' && (
             <button
-              onClick={() => setShowLoginModal(true)}
+              onClick={() => {
+                handleClick();
+                setShowRegisterForm(true);
+              }}
               className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
             >
               Claim Your Pro License ✨
@@ -119,12 +153,26 @@ const PromotionModal = ({ promotion, onClose }) => {
 };
 
 export default function PromotionBanner() {
+  const { data: session } = useSession();
   const [activePromotion, setActivePromotion] = useState(null);
   const [showBanner, setShowBanner] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [hasProLicense, setHasProLicense] = useState(false);
 
   useEffect(() => {
+    const checkLicenseStatus = async () => {
+      if (session?.user?.email) {
+        try {
+          const response = await fetch(`https://lic.yetanotherwiki.com/api/license/lookup/${encodeURIComponent(session.user.email)}`);
+          const licenseData = await response.json();
+          setHasProLicense(licenseData?.license_type === 'pro' && licenseData?.active);
+        } catch (error) {
+          console.error('Error checking license status:', error);
+        }
+      }
+    };
+
     const checkActivePromotion = async () => {
       try {
         const response = await fetch('/api/settings/promotions');
@@ -156,7 +204,10 @@ export default function PromotionBanner() {
       }
     };
 
-    checkActivePromotion();
+    checkLicenseStatus();
+    if (!hasProLicense) {
+      checkActivePromotion();
+    }
 
     const checkScreenSize = () => {
       setIsSmallScreen(window.innerWidth < 1000);
@@ -165,9 +216,9 @@ export default function PromotionBanner() {
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+  }, [session, hasProLicense]);
 
-  const handleClose = async () => {
+  const handleCloseBanner = async () => {
     if (!activePromotion) return;
 
     try {
@@ -186,16 +237,21 @@ export default function PromotionBanner() {
       localStorage.setItem(`promo_closed_${activePromotion.id}`, until);
       
       setShowBanner(false);
+      setShowModal(false);
     } catch (error) {
       console.error('Error tracking promotion close:', error);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   const handleBannerClick = () => {
     setShowModal(true);
   };
 
-  if (!activePromotion || !showBanner) return null;
+  if (!activePromotion || !showBanner || hasProLicense) return null;
 
   return (
     <>
@@ -212,7 +268,7 @@ export default function PromotionBanner() {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handleClose();
+                handleCloseBanner();
               }}
               className="ml-2 text-white/80 hover:text-white transition-colors"
             >
@@ -226,10 +282,10 @@ export default function PromotionBanner() {
         {showModal && (
           <PromotionModal
             promotion={activePromotion}
-            onClose={() => setShowModal(false)}
+            onClose={handleCloseModal}
           />
         )}
       </AnimatePresence>
     </>
- );
- }
+  );
+}
