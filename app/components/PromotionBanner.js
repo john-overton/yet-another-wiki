@@ -266,7 +266,7 @@ export default function PromotionBanner() {
         className={`bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600 text-white cursor-pointer flex items-center gap-3 rounded-xl shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 ${isSmallScreen ? 'p-2' : 'py-2 px-4'}`}
         onClick={handleBannerClick}
       >
-        <span className="text-2xl animate-bounce">🎁</span>
+        <span className="animate-bounce">🎁</span>
         {!isSmallScreen && (
           <>
             <span className="text-sm font-medium whitespace-nowrap">

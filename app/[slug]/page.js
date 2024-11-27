@@ -1,7 +1,9 @@
-import dynamic from 'next/dynamic';
+import { redirect } from 'next/navigation';
 
-const MainAppLayout = dynamic(() => import('../components/MainAppLayout'), { ssr: false });
+// Mark the page as dynamic
+export const dynamic = 'force-dynamic';
 
-export default function Page() {
-  return <MainAppLayout />;
+export default function SlugPage() {
+  // Redirect any non-docs routes to home
+  redirect('/');
 }

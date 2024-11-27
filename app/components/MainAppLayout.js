@@ -37,7 +37,7 @@ const MainAppLayout = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteModalSource, setDeleteModalSource] = useState(null);
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false); // Add this line
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const { theme } = useTheme();
   const router = useRouter();
@@ -48,7 +48,6 @@ const MainAppLayout = () => {
   const userRole = session?.user?.role;
   const canModifyContent = userRole !== 'User';
 
-  // Handle window resize and mobile detection
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 600;
@@ -60,12 +59,11 @@ const MainAppLayout = () => {
       }
     };
     
-    handleResize(); // Initial check
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Update document title when selected file changes
   useEffect(() => {
     if (selectedFile?.title) {
       document.title = `${selectedFile.title} - Yet Another Wiki`;
@@ -74,7 +72,6 @@ const MainAppLayout = () => {
     }
   }, [selectedFile]);
 
-  // Handle initial hash scroll
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.hash && fileContent) {
       const hash = window.location.hash.substring(1);
@@ -146,26 +143,44 @@ const MainAppLayout = () => {
     return null;
   }, []);
 
+  const findLowestSortOrderPage = useCallback((pages) => {
+    return pages
+      .filter(page => !page.deleted && page.isPublic)
+      .sort((a, b) => a.sortOrder - b.sortOrder)[0];
+  }, []);
+
   useEffect(() => {
     const slug = params?.slug;
-    if (slug && fileStructure.length > 0) {
+    if (fileStructure.length > 0) {
+      // Special handling for /docs route
+      if (slug === 'docs') {
+        const defaultPage = findLowestSortOrderPage(fileStructure);
+        if (defaultPage) {
+          setSelectedFile(defaultPage);
+          loadFileContent(defaultPage.path);
+          setIsTrashBinVisible(false);
+          // Update URL to include the default page
+          router.push(`/docs/${defaultPage.slug}`, undefined, { shallow: true });
+        }
+        return;
+      }
+
       const file = findFileBySlug(fileStructure, slug);
       if (file && (file.isPublic || session)) {
         setSelectedFile(file);
         loadFileContent(file.path);
         setIsTrashBinVisible(false);
       } else if (!file || (!file.isPublic && !session)) {
-        router.push('/');
-      }
-    } else if (fileStructure.length > 0) {
-      const homeFile = fileStructure.find(f => f.slug === 'home');
-      if (homeFile) {
-        setSelectedFile(homeFile);
-        loadFileContent(homeFile.path);
-        setIsTrashBinVisible(false);
+        // If no valid file is found, redirect to the default page
+        const defaultPage = findLowestSortOrderPage(fileStructure);
+        if (defaultPage) {
+          router.push(`/docs/${defaultPage.slug}`);
+        } else {
+          router.push('/');
+        }
       }
     }
-  }, [params, fileStructure, loadFileContent, session, router, findFileBySlug]);
+  }, [params, fileStructure, loadFileContent, session, router, findFileBySlug, findLowestSortOrderPage]);
 
   const handleNavigation = useCallback((destination) => {
     if (isEditing && hasUnsavedChanges) {
@@ -180,10 +195,10 @@ const MainAppLayout = () => {
   const handleFileSelect = useCallback((file) => {
     if (file.isPublic || session) {
       const isSameFile = selectedFile && selectedFile.path === file.path;
-      if (handleNavigation(`/${file.slug}`)) {
+      if (handleNavigation(`/docs/${file.slug}`)) {
         setSelectedFile(file);
         loadFileContent(file.path);
-        router.push(`/${file.slug}`, undefined, { shallow: true });
+        router.push(`/docs/${file.slug}`, undefined, { shallow: true });
         setIsTrashBinVisible(false);
         if (isSameFile) {
           setIsEditing(false);
@@ -233,7 +248,12 @@ const MainAppLayout = () => {
       if (response.ok) {
         await fetchFileStructure();
         if (selectedFile && selectedFile.id === id && !isTrashBinVisible) {
-          router.push('/');
+          const defaultPage = findLowestSortOrderPage(fileStructure);
+          if (defaultPage) {
+            router.push(`/docs/${defaultPage.slug}`);
+          } else {
+            router.push('/');
+          }
         }
       } else {
         const errorData = await response.json();
@@ -242,7 +262,7 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error deleting item:', error);
     }
-  }, [selectedFile, router, session, fetchFileStructure, isTrashBinVisible, canModifyContent]);
+  }, [selectedFile, router, session, fetchFileStructure, isTrashBinVisible, canModifyContent, findLowestSortOrderPage, fileStructure]);
 
   const handleDeleteClick = useCallback((id, title, hasChildren, source) => {
     if (!canModifyContent) return;
@@ -275,7 +295,7 @@ const MainAppLayout = () => {
       if (response.ok) {
         await fetchFileStructure();
         if (selectedFile && selectedFile.path === oldPath) {
-          router.push(`/${data.newSlug}`, undefined, { shallow: true });
+          router.push(`/docs/${data.newSlug}`, undefined, { shallow: true });
         }
       } else {
         console.error('Failed to rename item:', data.message);
@@ -308,7 +328,7 @@ const MainAppLayout = () => {
           router.push(pendingNavigation);
           setPendingNavigation(null);
         } else {
-          router.push(`/${updatedFile.slug}`, undefined, { shallow: true });
+          router.push(`/docs/${updatedFile.slug}`, undefined, { shallow: true });
         }
       } else {
         console.error('Failed to update file');
@@ -413,7 +433,7 @@ const MainAppLayout = () => {
   const renderEditor = () => {
     if (!selectedFile || !isEditing) return null;
     return (
-      <div className = "h-[calc(100vh-3rem)]">
+      <div className="h-[calc(100vh-3rem)]">
         <MDXEditor 
           file={selectedFile} 
           onSave={handleSave} 
@@ -421,7 +441,7 @@ const MainAppLayout = () => {
           refreshFileStructure={fetchFileStructure}
           onChangesPending={handleChangesPending}
         />
-        </div>
+      </div>
     );
   };
 

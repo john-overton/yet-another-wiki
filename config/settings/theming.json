@@ -1,7 +1,22 @@
 {
   "font": "Open Sans",
-  "theme": "light",
-  "links": [],
+  "theme": "dark",
+  "links": [
+    {
+      "text": "Home",
+      "hoverText": "Home",
+      "url": "http://localhost:3000",
+      "newTab": true,
+      "id": 1732633999831
+    },
+    {
+      "text": "Docs",
+      "hoverText": "Docs",
+      "url": "http://localhost:3000/docs",
+      "newTab": false,
+      "id": 1732725626451
+    }
+  ],
   "footerLinks": {
     "column1": {
       "header": "",
@@ -12,6 +27,10 @@
       "links": []
     }
   },
+  "footerSettings": {
+    "customCopyrightText": "",
+    "hidePoweredByText": false
+  },
   "headerLogo": {
     "lightLogo": null,
     "darkLogo": null
@@ -19,9 +38,5 @@
   "footerLogo": {
     "lightLogo": "/api/theming-content?path=footer-logo-light-1732298958761.png",
     "darkLogo": "/api/theming-content?path=footer-logo-dark-1732298963639.png"
-  },
-  "footerSettings": {
-    "customCopyrightText": "",
-    "hidePoweredByText": false
   }
 }

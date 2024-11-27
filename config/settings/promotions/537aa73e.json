@@ -1,0 +1,14 @@
+{
+  "type": "giveaway",
+  "startDate": "2024-11-19T00:00:00.000Z",
+  "endDate": "2024-11-21T00:00:00.000Z",
+  "description": "Super duper soft launch!",
+  "details": "To celebrate a 1.0.0 launch of YetAnotherWiki, get free pro license when you register.  The license is good forever!",
+  "maxGiveaways": 15,
+  "remainingGiveaways": 15,
+  "usedGiveaways": 0,
+  "clicksClosed": 0,
+  "clicksOpened": 0,
+  "registrations": 0,
+  "id": "537aa73e"
+}
