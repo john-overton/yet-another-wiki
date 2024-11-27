@@ -62,6 +62,7 @@ export async function GET(request: Request) {
       role: user.role,
       is_active: user.is_active,
       active: user.active,
+      is_pro: user.is_pro,  // Fixed: Now using the correct is_pro field
       created_at: user.created_at,
       updated_at: user.updated_at,
       last_login: user.last_login,

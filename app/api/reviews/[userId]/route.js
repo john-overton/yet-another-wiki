@@ -23,6 +23,7 @@ export async function GET(request, { params }) {
           select: {
             name: true,
             avatar: true,
+            is_pro: true,  // Added is_pro field
           },
         },
       },

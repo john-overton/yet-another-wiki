@@ -16,6 +16,7 @@ const ReviewCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [slideDirection, setSlideDirection] = useState('left');
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -41,21 +42,21 @@ const ReviewCarousel = () => {
 
     // Auto-advance carousel every 5 seconds
     const interval = setInterval(() => {
-      setCurrentIndex((current) => 
-        current === reviews.length - 1 ? 0 : current + 1
-      );
+      handleNext();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [reviews]); // Added reviews to dependency array
+  }, [reviews]);
 
   const handlePrevious = () => {
+    setSlideDirection('right');
     setCurrentIndex((current) => 
       current === 0 ? reviews.length - 1 : current - 1
     );
   };
 
   const handleNext = () => {
+    setSlideDirection('left');
     setCurrentIndex((current) => 
       current === reviews.length - 1 ? 0 : current + 1
     );
@@ -96,19 +97,31 @@ const ReviewCarousel = () => {
       </div>
 
       {/* Review Carousel */}
-      <div className="relative">
-        <div className="overflow-hidden">
-          <div className="flex items-center justify-center min-h-[200px]">
-            {reviews.map((review, index) => (
-              <div
-                key={review.id}
-                className={`w-full transition-opacity duration-300 absolute ${
-                  index === currentIndex ? 'opacity-100' : 'opacity-0'
-                }`}
-                style={{ display: index === currentIndex ? 'block' : 'none' }}
-              >
-                <div className="text-center space-y-4">
-                  <div className="flex justify-center">
+      <div className="relative overflow-hidden">
+        <div className="min-h-[200px] relative pt-2">
+          {reviews.map((review, index) => (
+            <div
+              key={review.id}
+              className={`w-full absolute top-0 left-0 transition-transform duration-500 ease-in-out ${
+                index === currentIndex ? 'z-10' : 'z-0'
+              }`}
+              style={{
+                transform: `translateX(${
+                  index === currentIndex 
+                    ? '0%' 
+                    : slideDirection === 'left'
+                      ? index === ((currentIndex + 1) % reviews.length)
+                        ? '100%'
+                        : '-100%'
+                      : index === (currentIndex === 0 ? reviews.length - 1 : currentIndex - 1)
+                        ? '-100%'
+                        : '100%'
+                })`
+              }}
+            >
+              <div className="text-center space-y-4 pt-1">
+                <div className="flex justify-center">
+                  <div className="relative">
                     <div className={`relative w-16 h-16 rounded-full overflow-hidden border-2 ${
                       BORDER_COLORS[index % BORDER_COLORS.length]
                     }`}>
@@ -125,27 +138,38 @@ const ReviewCarousel = () => {
                         </div>
                       )}
                     </div>
+                    <div className={`absolute -right-1 -top-1 w-5 h-5 rounded-full flex items-center justify-center shadow-sm ${
+                      review.user.is_pro 
+                        ? 'bg-purple-500 text-white'
+                        : 'bg-green-500 text-white'
+                    }`}>
+                      {review.user.is_pro ? (
+                        <i className="ri-vip-crown-fill text-[10px]"></i>
+                      ) : (
+                        <i className="ri-user-star-fill text-[10px]"></i>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex justify-center gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <i
-                        key={star}
-                        className={`ri-star-${
-                          star <= review.rating ? 'fill' : 'line'
-                        } text-yellow-400`}
-                      ></i>
-                    ))}
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                  &quot;{review.review}&quot;
-                  </p>
-                  <p className="font-semibold text-gray-900 dark:text-white">
-                    {review.user.name}
-                  </p>
                 </div>
+                <div className="flex justify-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <i
+                      key={star}
+                      className={`ri-star-${
+                        star <= review.rating ? 'fill' : 'line'
+                      } text-yellow-400`}
+                    ></i>
+                  ))}
+                </div>
+                <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                &quot;{review.review}&quot;
+                </p>
+                <p className="font-semibold text-gray-900 dark:text-white">
+                  {review.user.name}
+                </p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
         {/* Navigation Buttons */}
@@ -153,13 +177,13 @@ const ReviewCarousel = () => {
           <>
             <button
               onClick={handlePrevious}
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 z-20"
             >
               <i className="ri-arrow-left-s-line text-xl"></i>
             </button>
             <button
               onClick={handleNext}
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 z-20"
             >
               <i className="ri-arrow-right-s-line text-xl"></i>
             </button>

@@ -16,6 +16,7 @@ model User {
   role                      String
   is_active                 Boolean         @default(true)
   active                    Int             @default(1)
+  is_pro                    Boolean         @default(false)
   current_active_company_id Int?
   notification_preferences  String?
   voting_rights             Boolean         @default(false)

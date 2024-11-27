@@ -12,6 +12,7 @@ export async function GET() {
           select: {
             name: true,
             avatar: true,
+            is_pro: true,  // Added is_pro field
           },
         },
       },

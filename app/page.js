@@ -162,17 +162,25 @@ export default function Home() {
                   </li>
                   <li className="flex items-center text-gray-600 dark:text-gray-300">
                     <i className="ri-check-line mr-2 text-green-500"></i>
-                    Perfect for hobby projects
+                    Perfect for hobby\solo projects
                   </li>
                   <li className="flex items-center text-gray-600 dark:text-gray-300">
                     <i className="ri-check-line mr-2 text-green-500"></i>
-                    Community support
+                    Lifetime Updates
+                  </li>
+                  <li className="flex items-center text-gray-600 dark:text-gray-300">
+                    <i className="ri-close-line mr-2 text-red-500"></i>
+                    No Additional Users or User Management
+                  </li>
+                  <li className="flex items-center text-gray-600 dark:text-gray-300">
+                    <i className="ri-close-line mr-2 text-red-500"></i>
+                    Powered by YAW Always Enabled
                   </li>
                 </ul>
               </div>
 
               <div className="p-8 bg-white dark:bg-gray-700 rounded-lg shadow-lg border-2 border-blue-500">
-                <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Team License</h3>
+                <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Pro License</h3>
                 <div className="text-3xl font-bold mb-6 text-blue-600 dark:text-blue-400">One-time fee</div>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center text-gray-600 dark:text-gray-300">
@@ -181,11 +189,11 @@ export default function Home() {
                   </li>
                   <li className="flex items-center text-gray-600 dark:text-gray-300">
                     <i className="ri-check-line mr-2 text-green-500"></i>
-                    No subscriptions
+                    No subscriptions (How it&apos;s supposed to be)
                   </li>
                   <li className="flex items-center text-gray-600 dark:text-gray-300">
                     <i className="ri-check-line mr-2 text-green-500"></i>
-                    Priority support
+                    Remove YAW Labeling
                   </li>
                   <li className="flex items-center text-gray-600 dark:text-gray-300">
                     <i className="ri-check-line mr-2 text-green-500"></i>

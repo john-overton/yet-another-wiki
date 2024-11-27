@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 // Function to check if there's an active giveaway
 async function checkActiveGiveaway() {
@@ -89,6 +92,14 @@ export async function POST(request) {
     }
 
     const data = await response.json();
+
+    // Update user's is_pro status if it's a pro license
+    if (licenseType === 'pro') {
+      await prisma.user.update({
+        where: { email },
+        data: { is_pro: true }
+      });
+    }
 
     // If this was a giveaway, update the count
     if (activeGiveaway) {

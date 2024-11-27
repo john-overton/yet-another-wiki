@@ -1,5 +1,5 @@
 'use client';
-
+s
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import ReactConfetti from 'react-confetti';
@@ -160,7 +160,7 @@ const PromotionModal = ({ promotion, onClose, hasProLicense }) => {
 };
 
 export default function PromotionBanner() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [activePromotion, setActivePromotion] = useState(null);
   const [showBanner, setShowBanner] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -168,15 +168,19 @@ export default function PromotionBanner() {
   const [hasProLicense, setHasProLicense] = useState(false);
 
   useEffect(() => {
-    const checkLicenseStatus = async () => {
-      if (session?.user?.email) {
+    const fetchUserData = async () => {
+      if (status === 'authenticated') {
         try {
-          const response = await fetch(`https://lic.yetanotherwiki.com/api/license/lookup/${encodeURIComponent(session.user.email)}`);
-          const licenseData = await response.json();
-          setHasProLicense(licenseData?.license_type === 'pro' && licenseData?.active);
+          const response = await fetch('/api/auth/me');
+          if (response.ok) {
+            const userData = await response.json();
+            setHasProLicense(userData.is_pro || false);
+          }
         } catch (error) {
-          console.error('Error checking license status:', error);
+          console.error('Error fetching user data:', error);
         }
+      } else {
+        setHasProLicense(false);
       }
     };
 
@@ -211,7 +215,7 @@ export default function PromotionBanner() {
       }
     };
 
-    checkLicenseStatus();
+    fetchUserData();
     checkActivePromotion();
 
     const checkScreenSize = () => {
@@ -221,7 +225,7 @@ export default function PromotionBanner() {
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
-  }, [session]);
+  }, [status]);
 
   const handleCloseBanner = async () => {
     if (!activePromotion) return;
@@ -270,7 +274,9 @@ export default function PromotionBanner() {
         {!isSmallScreen && (
           <>
             <span className="text-sm font-medium whitespace-nowrap">
-              {hasProLicense ? 'Share this Pro License offer with a friend!' : activePromotion.description}
+              {status === 'authenticated' && hasProLicense 
+                ? 'Share this Pro License offer with a friend!' 
+                : activePromotion.description}
             </span>
             <button
               onClick={(e) => {
@@ -290,7 +296,7 @@ export default function PromotionBanner() {
           <PromotionModal
             promotion={activePromotion}
             onClose={handleCloseModal}
-            hasProLicense={hasProLicense}
+            hasProLicense={status === 'authenticated' && hasProLicense}
           />
         )}
       </AnimatePresence>
