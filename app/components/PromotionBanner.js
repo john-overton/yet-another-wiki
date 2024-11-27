@@ -1,5 +1,5 @@
 'use client';
-s
+
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import ReactConfetti from 'react-confetti';
