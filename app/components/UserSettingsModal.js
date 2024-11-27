@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import SecretQuestionsFormContent from './SecretQuestionsFormContent';
 import AvatarCropModal from './AvatarCropModal';
+import UserReviewComponent from './UserReviewComponent';
 
 const UserSettingsModal = ({ user, isOpen, onClose }) => {
   const [avatarPreview, setAvatarPreview] = useState(null);
@@ -11,6 +12,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
   const [showSecretQuestions, setShowSecretQuestions] = useState(false);
   const [message, setMessage] = useState({ type: '', content: '' });
   const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [showReview, setShowReview] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -74,6 +76,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
     if (!isOpen) {
       // Reset states when modal closes
       setShowPasswordReset(false);
+      setShowReview(false);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -355,6 +358,11 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
               </button>
             </div>
           </form>
+        ) : showReview ? (
+          <UserReviewComponent 
+            user={user}
+            onClose={() => setShowReview(false)}
+          />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex justify-center mb-4">
@@ -489,6 +497,15 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
             >
               <i className="ri-shield-keyhole-line"></i>
               Update Security Questions
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowReview(true)}
+              className="w-full px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center justify-center gap-2 mb-4"
+            >
+              <i className="ri-star-line"></i>
+              {user ? 'Update Your Review' : 'Leave a Review'}
             </button>
 
             <div className="flex justify-end gap-4 mt-6">

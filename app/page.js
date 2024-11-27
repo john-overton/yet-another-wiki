@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
+import ReviewCarousel from './components/ReviewCarousel';
 
 export default function Home() {
   const { resolvedTheme } = useTheme();
@@ -11,8 +12,8 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
       <div className="fixed top-0 left-0 right-0 h-12 p-1 flex justify-end overflow-visible bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-header shadow-lg z-[2000]">
-      <Header />
-        </div>
+        <Header />
+      </div>
       
       <main className="flex-grow">
         {/* Hero Section */}
@@ -32,6 +33,16 @@ export default function Home() {
             >
               Get Started
             </Link>
+          </div>
+        </section>
+
+        {/* Reviews Section */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+              What Our Users Say
+            </h2>
+            <ReviewCarousel />
           </div>
         </section>
 

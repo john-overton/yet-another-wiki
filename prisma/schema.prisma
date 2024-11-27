@@ -34,6 +34,7 @@ model User {
   secret_question_3         SecretQuestion? @relation("SecretQuestion3", fields: [secret_question_3_id], references: [id])
   secret_question_2         SecretQuestion? @relation("SecretQuestion2", fields: [secret_question_2_id], references: [id])
   secret_question_1         SecretQuestion? @relation("SecretQuestion1", fields: [secret_question_1_id], references: [id])
+  reviews                   UserReview[]
 }
 
 model SecretQuestion {
@@ -42,4 +43,14 @@ model SecretQuestion {
   users_3  User[] @relation("SecretQuestion3")
   users_2  User[] @relation("SecretQuestion2")
   users_1  User[] @relation("SecretQuestion1")
+}
+
+model UserReview {
+  id        Int      @id @default(autoincrement())
+  rating    Int      // 1-5 stars
+  review    String   // Max 1000 chars
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
