@@ -133,7 +133,7 @@ const ReviewCarousel = () => {
                     ))}
                   </div>
                   <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                    "{review.review}"
+                  &quot;{review.review}&quot;
                   </p>
                   <p className="font-semibold text-gray-900 dark:text-white">
                     {review.user.name}

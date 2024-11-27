@@ -19,11 +19,14 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative py-20 px-4 sm:px-6 lg:px-8 flex items-center justify-center min-h-[60vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900">
           <div className="text-center max-w-4xl mx-auto">
+            <div className="mb-4 text-gray-600 dark:text-gray-400 text-lg italic">
+              "Because the world needed another wiki platform... said no one ever."
+            </div>
             <h1 className="text-4xl sm:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-              Yes, Another Wiki Platform
+              Documentation Made Human
             </h1>
             <p className="text-xl sm:text-2xl mb-8 text-gray-600 dark:text-gray-300">
-              Because sometimes the world needs one more wiki solution 
+              A wiki platform that doesn't require a computer science degree to maintain 
               <span className="inline-block ml-2 animate-bounce">🚀</span>
             </p>
             <Link 
@@ -57,22 +60,22 @@ export default function Home() {
               {/* Feature 1 */}
               <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow-lg">
                 <div className="text-3xl mb-4 text-blue-600 dark:text-blue-400">
-                  <i className="ri-speed-line"></i>
+                  <i className="ri-edit-2-line"></i>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Lightning Fast</h3>
+                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Rich Content Editing</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Built with modern tech for blazing performance. Because waiting is so Web 1.0.
+                  Powered by MDXEditor with rich text editing, because markdown is great, but options are better.
                 </p>
               </div>
 
               {/* Feature 2 */}
               <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow-lg">
                 <div className="text-3xl mb-4 text-blue-600 dark:text-blue-400">
-                  <i className="ri-palette-line"></i>
+                  <i className="ri-layout-2-line"></i>
                 </div>
                 <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Beautiful Simplicity</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Clean design meets intuitive interface. No PhD in rocket science required.
+                  Light mode, dark mode, custom theming, and a UI that actually makes sense.
                 </p>
               </div>
 
@@ -83,8 +86,112 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Team-Friendly</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Collaboration tools that make teamwork actually work. Revolutionary, we know.
+                  Built for teams where not everyone speaks fluent Terminal.
                 </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Smart Features Section */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+              Smart Features That Matter
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="p-4">
+                <div className="text-2xl mb-2 text-blue-600 dark:text-blue-400">
+                  <i className="ri-file-list-3-line mr-2"></i>
+                  Auto TOC
+                </div>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Table of contents that builds itself
+                </p>
+              </div>
+
+              <div className="p-4">
+                <div className="text-2xl mb-2 text-blue-600 dark:text-blue-400">
+                  <i className="ri-search-line mr-2"></i>
+                  Smart Search
+                </div>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Find anything in seconds
+                </p>
+              </div>
+
+              <div className="p-4">
+                <div className="text-2xl mb-2 text-blue-600 dark:text-blue-400">
+                  <i className="ri-device-line mr-2"></i>
+                  Mobile-Ready
+                </div>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Because it's not 1999
+                </p>
+              </div>
+
+              <div className="p-4">
+                <div className="text-2xl mb-2 text-blue-600 dark:text-blue-400">
+                  <i className="ri-archive-line mr-2"></i>
+                  Easy Backups
+                </div>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Import/export right in the app
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+              Pricing That Makes Sense
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <div className="p-8 bg-white dark:bg-gray-700 rounded-lg shadow-lg">
+                <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Personal Use</h3>
+                <div className="text-3xl font-bold mb-6 text-blue-600 dark:text-blue-400">Free</div>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center text-gray-600 dark:text-gray-300">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    All core features
+                  </li>
+                  <li className="flex items-center text-gray-600 dark:text-gray-300">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Perfect for hobby projects
+                  </li>
+                  <li className="flex items-center text-gray-600 dark:text-gray-300">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Community support
+                  </li>
+                </ul>
+              </div>
+
+              <div className="p-8 bg-white dark:bg-gray-700 rounded-lg shadow-lg border-2 border-blue-500">
+                <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Team License</h3>
+                <div className="text-3xl font-bold mb-6 text-blue-600 dark:text-blue-400">One-time fee</div>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center text-gray-600 dark:text-gray-300">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Unlimited users
+                  </li>
+                  <li className="flex items-center text-gray-600 dark:text-gray-300">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    No subscriptions
+                  </li>
+                  <li className="flex items-center text-gray-600 dark:text-gray-300">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Priority support
+                  </li>
+                  <li className="flex items-center text-gray-600 dark:text-gray-300">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Lifetime updates
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -97,8 +204,8 @@ export default function Home() {
               Ready to Start Your Wiki Journey?
             </h2>
             <p className="text-xl mb-8 text-gray-600 dark:text-gray-300">
-              Join the ranks of those who thought the world needed another wiki platform. 
-              Spoiler alert: They were right.
+              Join the ranks of those who believe documentation should be easy to maintain.
+              No PhD required.
             </p>
             <Link 
               href="/docs" 
