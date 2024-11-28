@@ -267,28 +267,92 @@ export default function PromotionBanner() {
       <motion.div 
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className={`bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600 text-white cursor-pointer flex items-center gap-3 rounded-xl shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 ${isSmallScreen ? 'p-2' : 'py-2 px-4'}`}
+        className="fixed left-1/2 transform -translate-x-1/2 top-[48px] z-10"
         onClick={handleBannerClick}
       >
-        <span className="animate-bounce">🎁</span>
-        {!isSmallScreen && (
-          <>
-            <span className="text-sm font-medium whitespace-nowrap">
-              {status === 'authenticated' && hasProLicense 
-                ? 'Share this Pro License offer with a friend!' 
-                : activePromotion.description}
+        <div className="ribbon">
+          <span className="text cursor-pointer">
+            <span className="flex items-center gap-2">
+              <span className="animate-bounce">🎁</span>
+              {!isSmallScreen && (
+                <>
+                  <span className="font-medium whitespace-nowrap">
+                    {status === 'authenticated' && hasProLicense 
+                      ? 'Share this Pro License offer with a friend!' 
+                      : activePromotion.description}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCloseBanner();
+                    }}
+                    className="ml-2 text-black/80 hover:text-black transition-colors"
+                  >
+                    <i className="ri-close-line"></i>
+                  </button>
+                </>
+              )}
             </span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCloseBanner();
-              }}
-              className="ml-2 text-white/80 hover:text-white transition-colors"
-            >
-              <i className="ri-close-line"></i>
-            </button>
-          </>
-        )}
+          </span>
+          <style jsx>{`
+            .ribbon {
+              font-size: 16px;
+              position: relative;
+              display: inline-block;
+              text-align: center;
+              filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) 
+                      drop-shadow(0 10px 8px rgb(0 0 0 / 0.04))
+                      drop-shadow(0 20px 13px rgb(0 0 0 / 0.08))
+                      drop-shadow(0 40px 25px rgb(0 0 0 / 0.12));
+            }
+            .text {
+              display: inline-block;
+              padding: 0.5em 1em;
+              min-width: ${isSmallScreen ? '3em' : '20em'};
+              line-height: 1.2em;
+              background: linear-gradient(to right, #FF69B4, #9370DB, #4169E1);
+              position: relative;
+              color: white;
+              transition: all 0.2s ease;
+            }
+            .ribbon:hover .text {
+              transform: translateY(-2px);
+            }
+            .ribbon:after, .ribbon:before,
+            .text:before, .text:after {
+              content: '';
+              position: absolute;
+              border-style: solid;
+            }
+            .ribbon:before {
+              top: 0.3em;
+              left: 0.2em;
+              width: 100%;
+              height: 100%;
+              border: none;
+              z-index: -2;
+            }
+            .text:before {
+              bottom: 100%;
+              left: 0;
+              border-width: .5em .7em 0 0;
+              border-color: transparent #FF69B4 transparent transparent;
+            }
+            .text:after {
+              top: 100%;
+              right: 0;
+              border-width: .5em 2em 0 0;
+              border-color: #4169E1 transparent transparent transparent;
+            }
+            .ribbon:after {
+              top: 0.5em;
+              right: -2em;
+              border-width: 1.1em 1em 1.1em 3em;
+              border-color: #9370DB transparent #9370DB #9370DB;
+              z-index: -1;
+            }
+          `}</style>
+        </div>
       </motion.div>
 
       <AnimatePresence>
