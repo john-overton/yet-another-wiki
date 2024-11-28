@@ -10,13 +10,6 @@
       "id": 1732633999831
     },
     {
-      "text": "Features",
-      "hoverText": "Features",
-      "url": "http://localhost:3000/features",
-      "newTab": false,
-      "id": 1732725626451
-    },
-    {
       "text": "Docs",
       "hoverText": "Docs",
       "url": "http://localhost:3000/docs",

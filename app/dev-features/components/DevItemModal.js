@@ -11,6 +11,17 @@ export default function DevItemModal({ item, isOpen, onClose, onStatusUpdate, se
   const [status, setStatus] = useState(item?.status || 'new');
   const [loading, setLoading] = useState(false);
 
+  // Handle ESC key press
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
   const loadComments = useCallback(async () => {
     try {
       const response = await fetch(`/api/dev-items/comments?itemId=${item.id}`);
@@ -88,12 +99,19 @@ export default function DevItemModal({ item, isOpen, onClose, onStatusUpdate, se
     }
   };
 
+  // Handle click outside
+  const handleOutsideClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   const isAdmin = session?.user?.role === 'Admin';
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleOutsideClick}>
       <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
           <div className="flex items-center gap-4">

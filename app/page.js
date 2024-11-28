@@ -5,9 +5,36 @@ import Footer from './components/Footer';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import ReviewCarousel from './components/ReviewCarousel';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const { resolvedTheme } = useTheme();
+  const [activeSection, setActiveSection] = useState('introduction');
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    const sections = document.querySelectorAll('section[id]');
+    sections.forEach((section) => observer.observe(section));
+
+    return () => sections.forEach((section) => observer.unobserve(section));
+  }, []);
+
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
@@ -15,9 +42,38 @@ export default function Home() {
         <Header />
       </div>
       
+      {/* Floating Navigation */}
+      <nav className="fixed right-8 top-1/2 transform -translate-y-1/2 z-50 hidden lg:block">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 space-y-4">
+          <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">
+            Quick Navigation
+          </div>
+          {['introduction', 'features', 'community', 'pricing'].map((section) => (
+            <button
+              key={section}
+              onClick={() => scrollToSection(section)}
+              className={`flex items-center space-x-2 w-full text-left px-3 py-2 rounded-md transition-all duration-200 ${
+                activeSection === section
+                  ? 'bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+            >
+              <div className={`w-2 h-2 rounded-full ${
+                activeSection === section
+                  ? 'bg-blue-600 dark:bg-blue-400'
+                  : 'bg-gray-300 dark:bg-gray-600'
+              }`} />
+              <span className="capitalize">
+                {section}
+              </span>
+            </button>
+          ))}
+        </div>
+      </nav>
+
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative py-20 px-4 sm:px-6 lg:px-8 flex items-center justify-center min-h-[60vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900">
+        <section id="introduction" className="relative py-20 px-4 sm:px-6 lg:px-8 flex items-center justify-center min-h-[60vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900">
           <div className="text-center max-w-4xl mx-auto">
             <div className="mb-4 text-gray-600 dark:text-gray-400 text-lg italic">
               &ldquo;Because the world needed another wiki platform... said no one ever.&rdquo;
@@ -50,109 +106,185 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
+        <section id="features" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-              Why Choose <span className="text-blue-600 dark:text-blue-400">Yet Another</span> Wiki?
+            <h2 className="text-4xl sm:text-6xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+              Features That Actually Matter
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Feature 1 */}
-              <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow-lg">
+            {/* Content Creation Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+              <div className="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300">
+                <h3 className="text-2xl font-semibold mb-4 text-blue-600 dark:text-blue-400">
+                  Rich Text Editing
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  Powered by MDXEditor, our editor combines the power of markdown with the convenience of rich text editing. Write documentation your way, with features like:
+                </p>
+                <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                  <li className="flex items-center">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    WYSIWYG editing interface
+                  </li>
+                  <li className="flex items-center">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Markdown support for power users
+                  </li>
+                  <li className="flex items-center">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Image drag-and-drop
+                  </li>
+                  <li className="flex items-center">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Code block syntax highlighting
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300">
+                <h3 className="text-2xl font-semibold mb-4 text-blue-600 dark:text-blue-400">
+                  Intelligent Organization
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  Keep your documentation organized with features designed for clarity and accessibility:
+                </p>
+                <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                  <li className="flex items-center">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Nested pages for logical grouping
+                  </li>
+                  <li className="flex items-center">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Private pages for sensitive content
+                  </li>
+                  <li className="flex items-center">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Custom URLs for better navigation
+                  </li>
+                  <li className="flex items-center">
+                    <i className="ri-check-line mr-2 text-green-500"></i>
+                    Automatic table of contents
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Smart Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+              <div className="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
                 <div className="text-3xl mb-4 text-blue-600 dark:text-blue-400">
-                  <i className="ri-edit-2-line"></i>
+                  <i className="ri-search-line"></i>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Rich Content Editing</h3>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                  Powerful Search
+                </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Powered by MDXEditor with rich text editing, because markdown is great, but options are better.
+                  Find anything in seconds with our advanced search capabilities. Full-text search that understands your content structure.
                 </p>
               </div>
 
-              {/* Feature 2 */}
-              <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow-lg">
+              <div className="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
                 <div className="text-3xl mb-4 text-blue-600 dark:text-blue-400">
-                  <i className="ri-layout-2-line"></i>
+                  <i className="ri-device-line"></i>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Beautiful Simplicity</h3>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                  Responsive Design
+                </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Light mode, dark mode, custom theming, and a UI that actually makes sense.
+                  Access your documentation from any device. Our mobile-first approach ensures a great experience on phones, tablets, and desktops.
                 </p>
               </div>
 
-              {/* Feature 3 */}
-              <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow-lg">
+              <div className="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
                 <div className="text-3xl mb-4 text-blue-600 dark:text-blue-400">
-                  <i className="ri-team-line"></i>
+                  <i className="ri-palette-line"></i>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Team-Friendly</h3>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                  Customizable Theming
+                </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Built for teams where not everyone speaks fluent Terminal.
+                  Make it yours with light mode, dark mode, and custom theming options. Seamlessly integrate with your existing website&apos;s look and feel.
                 </p>
+              </div>
+            </div>
+
+            {/* Data Protection Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-lg">
+                <h3 className="text-2xl font-semibold mb-4 text-blue-600 dark:text-blue-400">
+                  Data Protection
+                </h3>
+                <ul className="space-y-4 text-gray-600 dark:text-gray-300">
+                  <li className="flex items-start">
+                    <i className="ri-shield-check-line mt-1 mr-2 text-green-500"></i>
+                    <span>
+                      <strong className="block">Built-in Backup System</strong>
+                      Import and export your documentation right from the app interface. No server access required.
+                    </span>
+                  </li>
+                  <li className="flex items-start">
+                    <i className="ri-delete-bin-line mt-1 mr-2 text-green-500"></i>
+                    <span>
+                      <strong className="block">Trash Bin Recovery</strong>
+                      Accidentally deleted something? No problem. Our trash bin keeps your deleted content safe until you&apos;re sure you want to remove it.
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-lg">
+                <h3 className="text-2xl font-semibold mb-4 text-blue-600 dark:text-blue-400">
+                  Team-Friendly
+                </h3>
+                <ul className="space-y-4 text-gray-600 dark:text-gray-300">
+                  <li className="flex items-start">
+                    <i className="ri-team-line mt-1 mr-2 text-green-500"></i>
+                    <span>
+                      <strong className="block">User Management</strong>
+                      Add team members and manage permissions without complexity. Perfect for teams of any size.
+                    </span>
+                  </li>
+                  <li className="flex items-start">
+                    <i className="ri-git-merge-line mt-1 mr-2 text-green-500"></i>
+                    <span>
+                      <strong className="block">Import Existing Docs</strong>
+                      Bring your existing documentation from other platforms. Support for various formats including Markdown.
+                    </span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Smart Features Section */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+        {/* Community Section */}
+        <section id="community" className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-              Smart Features That Matter
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="p-4">
-                <div className="text-2xl mb-2 text-blue-600 dark:text-blue-400">
-                  <i className="ri-file-list-3-line mr-2"></i>
-                  Auto TOC
-                </div>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Table of contents that builds itself
-                </p>
-              </div>
-
-              <div className="p-4">
-                <div className="text-2xl mb-2 text-blue-600 dark:text-blue-400">
-                  <i className="ri-search-line mr-2"></i>
-                  Smart Search
-                </div>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Find anything in seconds
-                </p>
-              </div>
-
-              <div className="p-4">
-                <div className="text-2xl mb-2 text-blue-600 dark:text-blue-400">
-                  <i className="ri-device-line mr-2"></i>
-                  Mobile-Ready
-                </div>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Because it&apos;s not 1999
-                </p>
-              </div>
-
-              <div className="p-4">
-                <div className="text-2xl mb-2 text-blue-600 dark:text-blue-400">
-                  <i className="ri-archive-line mr-2"></i>
-                  Easy Backups
-                </div>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Import/export right in the app
-                </p>
-              </div>
+            <div className="bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-2xl p-12 text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                Community-Driven Development
+              </h2>
+              <p className="text-xl mb-8 text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                We believe in building features that matter to you. Visit our development features page to vote on upcoming features and report bugs. Your voice shapes our roadmap.
+              </p>
+              <Link 
+                href="/dev-features" 
+                className="inline-block px-8 py-4 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition-colors duration-200 transform hover:scale-105"
+                aria-label="Visit Development Features"
+              >
+                Shape the Future
+              </Link>
             </div>
           </div>
         </section>
 
         {/* Pricing Section */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
+        <section id="pricing" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
               Pricing That Makes Sense
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              <div className="p-8 bg-white dark:bg-gray-700 rounded-lg shadow-lg">
+              <div className="p-8 bg-white dark:bg-gray-700 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300">
                 <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Personal Use</h3>
                 <div className="text-3xl font-bold mb-6 text-blue-600 dark:text-blue-400">Free</div>
                 <ul className="space-y-3 mb-8">
@@ -179,7 +311,7 @@ export default function Home() {
                 </ul>
               </div>
 
-              <div className="p-8 bg-white dark:bg-gray-700 rounded-lg shadow-lg border-2 border-blue-500">
+              <div className="p-8 bg-white dark:bg-gray-700 rounded-lg shadow-lg border-2 border-blue-500 transform hover:scale-105 transition-transform duration-300">
                 <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Pro License</h3>
                 <div className="text-3xl font-bold mb-6 text-blue-600 dark:text-blue-400">One-time fee</div>
                 <ul className="space-y-3 mb-8">
@@ -205,7 +337,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* Final CTA Section */}
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
@@ -217,7 +349,7 @@ export default function Home() {
             </p>
             <Link 
               href="/docs" 
-              className="inline-block px-8 py-4 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition-colors duration-200"
+              className="inline-block px-8 py-4 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition-colors duration-200 transform hover:scale-105"
               aria-label="Start Using YetAnotherWiki"
             >
               Start Now
