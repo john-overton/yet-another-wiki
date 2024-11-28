@@ -36,6 +36,8 @@ model User {
   secret_question_2         SecretQuestion? @relation("SecretQuestion2", fields: [secret_question_2_id], references: [id])
   secret_question_1         SecretQuestion? @relation("SecretQuestion1", fields: [secret_question_1_id], references: [id])
   reviews                   UserReview[]
+  devItemVotes             DevItemVote[]
+  devItemComments          DevItemComment[]
 }
 
 model SecretQuestion {
@@ -54,4 +56,43 @@ model UserReview {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model DevItem {
+  id              Int              @id @default(autoincrement())
+  type            String          // 'bug' or 'feature'
+  title           String
+  details         String          // Markdown content
+  status          String          // 'new', 'in_progress', 'done'
+  developerNotes  String?         // Renamed from adminNotes
+  views           Int             @default(0)
+  dateCreated     DateTime        @default(now())
+  dateCompleted   DateTime?
+  votes           DevItemVote[]
+  comments        DevItemComment[]
+}
+
+model DevItemVote {
+  id        Int      @id @default(autoincrement())
+  devItemId Int
+  userId    Int
+  devItem   DevItem  @relation(fields: [devItemId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([devItemId, userId])
+}
+
+model DevItemComment {
+  id          Int      @id @default(autoincrement())
+  devItemId   Int
+  userId      Int
+  parentId    Int?
+  content     String
+  devItem     DevItem  @relation(fields: [devItemId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+  parent      DevItemComment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     DevItemComment[] @relation("CommentReplies")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

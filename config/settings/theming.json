@@ -1,20 +1,34 @@
 {
   "font": "Open Sans",
-  "theme": "dark",
+  "theme": "light",
   "links": [
     {
       "text": "Home",
       "hoverText": "Home",
       "url": "http://localhost:3000",
-      "newTab": true,
+      "newTab": false,
       "id": 1732633999831
+    },
+    {
+      "text": "Features",
+      "hoverText": "Features",
+      "url": "http://localhost:3000/features",
+      "newTab": false,
+      "id": 1732725626451
     },
     {
       "text": "Docs",
       "hoverText": "Docs",
       "url": "http://localhost:3000/docs",
       "newTab": false,
-      "id": 1732725626451
+      "id": 1732744890589
+    },
+    {
+      "text": "New Development",
+      "hoverText": "New Development",
+      "url": "http://localhost:3000/dev-features",
+      "newTab": false,
+      "id": 1732750667947
     }
   ],
   "footerLinks": {

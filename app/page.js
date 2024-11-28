@@ -20,13 +20,13 @@ export default function Home() {
         <section className="relative py-20 px-4 sm:px-6 lg:px-8 flex items-center justify-center min-h-[60vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900">
           <div className="text-center max-w-4xl mx-auto">
             <div className="mb-4 text-gray-600 dark:text-gray-400 text-lg italic">
-              "Because the world needed another wiki platform... said no one ever."
+              &ldquo;Because the world needed another wiki platform... said no one ever.&rdquo;
             </div>
             <h1 className="text-4xl sm:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
               Documentation Made Human
             </h1>
             <p className="text-xl sm:text-2xl mb-8 text-gray-600 dark:text-gray-300">
-              A wiki platform that doesn't require a computer science degree to maintain 
+              A wiki platform that doesn&apos;t require a computer science degree to maintain 
               <span className="inline-block ml-2 animate-bounce">🚀</span>
             </p>
             <Link 
@@ -127,7 +127,7 @@ export default function Home() {
                   Mobile-Ready
                 </div>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Because it's not 1999
+                  Because it&apos;s not 1999
                 </p>
               </div>
 

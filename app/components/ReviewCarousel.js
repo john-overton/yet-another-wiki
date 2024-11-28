@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 
 const BORDER_COLORS = [
@@ -39,6 +39,13 @@ const ReviewCarousel = () => {
     fetchReviews();
   }, []);
 
+  const handleNext = useCallback(() => {
+    setSlideDirection('left');
+    setCurrentIndex((current) => 
+      current === reviews.length - 1 ? 0 : current + 1
+    );
+  }, [reviews.length]);
+
   useEffect(() => {
     if (reviews.length === 0) return;
 
@@ -48,19 +55,12 @@ const ReviewCarousel = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [reviews]);
+  }, [reviews, handleNext]);
 
   const handlePrevious = () => {
     setSlideDirection('right');
     setCurrentIndex((current) => 
       current === 0 ? reviews.length - 1 : current - 1
-    );
-  };
-
-  const handleNext = () => {
-    setSlideDirection('left');
-    setCurrentIndex((current) => 
-      current === reviews.length - 1 ? 0 : current + 1
     );
   };
 
