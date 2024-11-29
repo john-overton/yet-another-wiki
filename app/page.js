@@ -43,25 +43,22 @@ export default function Home() {
       </div>
       
       {/* Floating Navigation */}
-      <nav className="fixed right-8 top-1/2 transform -translate-y-1/2 z-50 hidden lg:block">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 space-y-4">
-          <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">
-            Quick Navigation
-          </div>
+      <nav className="fixed left-8 top-1/4 transform -translate-y-1/2 z-50 hidden lg:block">
+        <div className="backdrop-blur-md bg-gradient-to-br from-white/40 to-white/10 dark:from-gray-800/40 dark:to-gray-800/10 rounded-2xl shadow-xl p-3 space-y-2 border border-white/20 dark:border-gray-700/30">
           {['introduction', 'features', 'community', 'pricing'].map((section) => (
             <button
               key={section}
               onClick={() => scrollToSection(section)}
-              className={`flex items-center space-x-2 w-full text-left px-3 py-2 rounded-md transition-all duration-200 ${
+              className={`flex items-center space-x-2 w-full text-left px-4 py-2.5 rounded-xl transition-all duration-200 ${
                 activeSection === section
-                  ? 'bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  ? 'bg-white/30 dark:bg-gray-700/30 text-blue-600 dark:text-blue-400 shadow-sm'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-white/20 dark:hover:bg-gray-700/20'
               }`}
             >
               <div className={`w-2 h-2 rounded-full ${
                 activeSection === section
                   ? 'bg-blue-600 dark:bg-blue-400'
-                  : 'bg-gray-300 dark:bg-gray-600'
+                  : 'bg-gray-400/50 dark:bg-gray-500/50'
               }`} />
               <span className="capitalize">
                 {section}
@@ -72,6 +69,7 @@ export default function Home() {
       </nav>
 
       <main className="flex-grow">
+        {/* Rest of the content remains unchanged */}
         {/* Hero Section */}
         <section id="introduction" className="relative py-20 px-4 sm:px-6 lg:px-8 flex items-center justify-center min-h-[60vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900">
           <div className="text-center max-w-4xl mx-auto">
