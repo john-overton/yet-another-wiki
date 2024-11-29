@@ -18,6 +18,7 @@ const ReviewCarousel = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [slideDirection, setSlideDirection] = useState('left');
+  const [timestamp, setTimestamp] = useState(Date.now());
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -62,6 +63,18 @@ const ReviewCarousel = () => {
     setCurrentIndex((current) => 
       current === 0 ? reviews.length - 1 : current - 1
     );
+  };
+
+  const getAvatarSrc = (avatar) => {
+    if (!avatar) return null;
+    if (avatar.startsWith('data:')) return avatar;
+    
+    // Convert filename to dynamic API path
+    const filename = avatar.includes('/') 
+      ? avatar.split('/').pop() 
+      : avatar;
+    
+    return `/api/uploads/user-avatars/${filename}?t=${timestamp}`;
   };
 
   if (loading) {
@@ -129,10 +142,13 @@ const ReviewCarousel = () => {
                     }`}>
                       {review.user.avatar ? (
                         <Image
-                          src={review.user.avatar}
+                          src={getAvatarSrc(review.user.avatar)}
                           alt={review.user.name}
                           fill
                           className="object-cover"
+                          unoptimized={true}
+                          priority
+                          key={timestamp}
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">

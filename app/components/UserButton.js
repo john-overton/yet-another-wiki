@@ -8,13 +8,11 @@ import UserSettingsModal from './UserSettingsModal';
 
 export default function UserButton({ user: initialUser }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [avatarError, setAvatarError] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [timestamp, setTimestamp] = useState(Date.now());
   const [user, setUser] = useState(initialUser);
   const router = useRouter();
   const dropdownRef = useRef(null);
-  const retryTimeoutRef = useRef(null);
 
   useEffect(() => {
     setUser(initialUser);
@@ -47,18 +45,10 @@ export default function UserButton({ user: initialUser }) {
         // Update timestamp for cache busting
         const newTimestamp = event.detail?.timestamp || Date.now();
         setTimestamp(newTimestamp);
-        setAvatarError(false);
       } catch (error) {
         console.error('Error fetching updated user data:', error);
       }
     };
-
-    // Periodic avatar validation (every 5 minutes)
-    const validateInterval = setInterval(() => {
-      if (user?.avatar) {
-        setTimestamp(Date.now());
-      }
-    }, 5 * 60 * 1000);
 
     document.addEventListener('mousedown', handleClickOutside);
     window.addEventListener('user-avatar-updated', handleAvatarUpdate);
@@ -66,12 +56,8 @@ export default function UserButton({ user: initialUser }) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('user-avatar-updated', handleAvatarUpdate);
-      clearInterval(validateInterval);
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-      }
     };
-  }, [user?.avatar]);
+  }, []);
 
   if (!user) {
     return null;
@@ -84,40 +70,19 @@ export default function UserButton({ user: initialUser }) {
     });
   };
 
-  const getAvatarUrl = (avatar) => {
-    if (!avatar) {
-      return null;
-    }
-    
-    if (avatar.startsWith('data:')) {
-      return avatar;
-    }
+  const getAvatarSrc = (avatar) => {
+    if (!avatar) return null;
+    if (avatar.startsWith('data:')) return avatar;
     
     // Convert filename to dynamic API path
     const filename = avatar.includes('/') 
       ? avatar.split('/').pop() 
       : avatar;
     
-    // Use the shared timestamp for cache busting
     return `/api/uploads/user-avatars/${filename}?t=${timestamp}`;
   };
 
-  const handleAvatarError = () => {
-    setAvatarError(true);
-    
-    // Clear any existing retry timeout
-    if (retryTimeoutRef.current) {
-      clearTimeout(retryTimeoutRef.current);
-    }
-    
-    // Attempt to reload with a new timestamp after a short delay
-    retryTimeoutRef.current = setTimeout(() => {
-      setTimestamp(Date.now());
-      setAvatarError(false);
-    }, 2000);
-  };
-
-  const avatarUrl = getAvatarUrl(user.avatar);
+  const avatarUrl = getAvatarSrc(user.avatar);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -128,7 +93,7 @@ export default function UserButton({ user: initialUser }) {
         aria-expanded={isOpen}
         title={`Logged in as ${user.name}, ${user.email}`}
       >
-        {avatarUrl && !avatarError ? (
+        {avatarUrl ? (
           <div className="relative h-10 w-10 rounded-full overflow-hidden">
             <Image
               src={avatarUrl}
@@ -136,7 +101,6 @@ export default function UserButton({ user: initialUser }) {
               className="object-cover"
               fill
               sizes="40px"
-              onError={handleAvatarError}
               unoptimized={true}
               priority
               key={timestamp} // Force remount when timestamp changes
