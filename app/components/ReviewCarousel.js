@@ -11,6 +11,9 @@ const BORDER_COLORS = [
   'border-yellow-500'
 ];
 
+const TRANSITION_DURATION = 500;
+const INTERVAL_DURATION = 5000;
+
 const ReviewCarousel = () => {
   const [reviews, setReviews] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -19,6 +22,7 @@ const ReviewCarousel = () => {
   const [loading, setLoading] = useState(true);
   const [slideDirection, setSlideDirection] = useState('left');
   const [timestamp, setTimestamp] = useState(Date.now());
+  const [isAnimating, setIsAnimating] = useState(false);
   const timerRef = useRef(null);
 
   useEffect(() => {
@@ -41,49 +45,84 @@ const ReviewCarousel = () => {
     fetchReviews();
   }, []);
 
-  const resetTimer = useCallback(() => {
+  const startCarousel = useCallback(() => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-    timerRef.current = setInterval(() => {
-      handleNext();
-    }, 5000);
-  }, []);
+    
+    if (reviews.length > 1) {
+      timerRef.current = setInterval(() => {
+        setCurrentIndex(current => {
+          const next = current === reviews.length - 1 ? 0 : current + 1;
+          setSlideDirection('left');
+          return next;
+        });
+      }, INTERVAL_DURATION);
+    }
+  }, [reviews.length]);
 
-  const handleNext = useCallback(() => {
-    setSlideDirection('left');
-    setCurrentIndex((current) => 
-      current === reviews.length - 1 ? 0 : current + 1
-    );
-    resetTimer();
-  }, [reviews.length, resetTimer]);
-
+  // Start/restart carousel when reviews change
   useEffect(() => {
-    if (reviews.length === 0) return;
-
-    // Initial timer setup
-    resetTimer();
-
+    startCarousel();
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [reviews, resetTimer]);
+  }, [reviews.length, startCarousel]);
 
-  const handlePrevious = () => {
+  const handleNext = useCallback(() => {
+    if (isAnimating) return;
+    
+    setIsAnimating(true);
+    setSlideDirection('left');
+    setCurrentIndex(current => current === reviews.length - 1 ? 0 : current + 1);
+    
+    // Reset animation flag after transition
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, TRANSITION_DURATION);
+
+    // Restart the carousel timer
+    startCarousel();
+  }, [reviews.length, isAnimating, startCarousel]);
+
+  const handlePrevious = useCallback(() => {
+    if (isAnimating) return;
+    
+    setIsAnimating(true);
     setSlideDirection('right');
-    setCurrentIndex((current) => 
-      current === 0 ? reviews.length - 1 : current - 1
-    );
-    resetTimer();
-  };
+    setCurrentIndex(current => current === 0 ? reviews.length - 1 : current - 1);
+    
+    // Reset animation flag after transition
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, TRANSITION_DURATION);
+
+    // Restart the carousel timer
+    startCarousel();
+  }, [reviews.length, isAnimating, startCarousel]);
+
+  const handleDotClick = useCallback((index) => {
+    if (isAnimating || index === currentIndex) return;
+    
+    setIsAnimating(true);
+    setSlideDirection(index > currentIndex ? 'left' : 'right');
+    setCurrentIndex(index);
+    
+    // Reset animation flag after transition
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, TRANSITION_DURATION);
+
+    // Restart the carousel timer
+    startCarousel();
+  }, [currentIndex, isAnimating, startCarousel]);
 
   const getAvatarSrc = (avatar) => {
     if (!avatar) return null;
     if (avatar.startsWith('data:')) return avatar;
     
-    // Convert filename to dynamic API path
     const filename = avatar.includes('/') 
       ? avatar.split('/').pop() 
       : avatar;
@@ -128,80 +167,85 @@ const ReviewCarousel = () => {
       {/* Review Carousel */}
       <div className="relative overflow-hidden">
         <div className="min-h-[200px] relative pt-2">
-          {reviews.map((review, index) => (
-            <div
-              key={review.id}
-              className={`w-full absolute top-0 left-0 transition-transform duration-500 ease-in-out ${
-                index === currentIndex ? 'z-10' : 'z-0'
-              }`}
-              style={{
-                transform: `translateX(${
-                  index === currentIndex 
-                    ? '0%' 
-                    : slideDirection === 'left'
-                      ? index === ((currentIndex + 1) % reviews.length)
-                        ? '100%'
-                        : '-100%'
-                      : index === (currentIndex === 0 ? reviews.length - 1 : currentIndex - 1)
-                        ? '-100%'
-                        : '100%'
-                })`
-              }}
-            >
-              <div className="text-center space-y-4 pt-1">
-                <div className="flex justify-center">
-                  <div className="relative">
-                    <div className={`relative w-16 h-16 rounded-full overflow-hidden border-2 ${
-                      BORDER_COLORS[index % BORDER_COLORS.length]
-                    }`}>
-                      {review.user.avatar ? (
-                        <Image
-                          src={getAvatarSrc(review.user.avatar)}
-                          alt={review.user.name}
-                          fill
-                          className="object-cover"
-                          unoptimized={true}
-                          priority
-                          key={timestamp}
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                          <i className="ri-user-line text-2xl text-gray-500 dark:text-gray-400"></i>
-                        </div>
-                      )}
-                    </div>
-                    <div className={`absolute -right-1 -top-1 w-5 h-5 rounded-full flex items-center justify-center shadow-sm ${
-                      review.user.is_pro 
-                        ? 'bg-purple-500 text-white'
-                        : 'bg-green-500 text-white'
-                    }`}>
-                      {review.user.is_pro ? (
-                        <i className="ri-vip-crown-fill text-[10px]"></i>
-                      ) : (
-                        <i className="ri-user-star-fill text-[10px]"></i>
-                      )}
+          {reviews.map((review, index) => {
+            const isPrevious = index === (currentIndex === 0 ? reviews.length - 1 : currentIndex - 1);
+            const isNext = index === ((currentIndex + 1) % reviews.length);
+            
+            return (
+              <div
+                key={review.id}
+                className={`w-full absolute top-0 left-0 transition-transform duration-500 ease-in-out ${
+                  index === currentIndex ? 'z-10' : 'z-0'
+                }`}
+                style={{
+                  transform: `translateX(${
+                    index === currentIndex 
+                      ? '0%' 
+                      : slideDirection === 'left'
+                        ? isNext
+                          ? '100%'
+                          : '-100%'
+                        : isPrevious
+                          ? '-100%'
+                          : '100%'
+                  })`
+                }}
+              >
+                <div className="text-center space-y-4 pt-1">
+                  <div className="flex justify-center">
+                    <div className="relative">
+                      <div className={`relative w-16 h-16 rounded-full overflow-hidden border-2 ${
+                        BORDER_COLORS[index % BORDER_COLORS.length]
+                      }`}>
+                        {review.user.avatar ? (
+                          <Image
+                            src={getAvatarSrc(review.user.avatar)}
+                            alt={review.user.name}
+                            fill
+                            className="object-cover"
+                            unoptimized={true}
+                            priority
+                            key={timestamp}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                            <i className="ri-user-line text-2xl text-gray-500 dark:text-gray-400"></i>
+                          </div>
+                        )}
+                      </div>
+                      <div className={`absolute -right-1 -top-1 w-5 h-5 rounded-full flex items-center justify-center shadow-sm ${
+                        review.user.is_pro 
+                          ? 'bg-purple-500 text-white'
+                          : 'bg-green-500 text-white'
+                      }`}>
+                        {review.user.is_pro ? (
+                          <i className="ri-vip-crown-fill text-[10px]"></i>
+                        ) : (
+                          <i className="ri-user-star-fill text-[10px]"></i>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <div className="flex justify-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <i
+                        key={star}
+                        className={`ri-star-${
+                          star <= review.rating ? 'fill' : 'line'
+                        } text-yellow-400`}
+                      ></i>
+                    ))}
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                  &quot;{review.review}&quot;
+                  </p>
+                  <p className="font-semibold text-gray-900 dark:text-white">
+                    {review.user.name}
+                  </p>
                 </div>
-                <div className="flex justify-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <i
-                      key={star}
-                      className={`ri-star-${
-                        star <= review.rating ? 'fill' : 'line'
-                      } text-yellow-400`}
-                    ></i>
-                  ))}
-                </div>
-                <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                &quot;{review.review}&quot;
-                </p>
-                <p className="font-semibold text-gray-900 dark:text-white">
-                  {review.user.name}
-                </p>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Navigation Buttons */}
@@ -209,13 +253,15 @@ const ReviewCarousel = () => {
           <>
             <button
               onClick={handlePrevious}
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 z-20"
+              disabled={isAnimating}
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 z-20 disabled:opacity-50"
             >
               <i className="ri-arrow-left-s-line text-xl"></i>
             </button>
             <button
               onClick={handleNext}
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 z-20"
+              disabled={isAnimating}
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 z-20 disabled:opacity-50"
             >
               <i className="ri-arrow-right-s-line text-xl"></i>
             </button>
@@ -228,15 +274,13 @@ const ReviewCarousel = () => {
             {reviews.map((_, index) => (
               <button
                 key={index}
-                onClick={() => {
-                  setCurrentIndex(index);
-                  resetTimer();
-                }}
-                className={`w-2 h-2 rounded-full ${
+                disabled={isAnimating}
+                onClick={() => handleDotClick(index)}
+                className={`w-2 h-2 rounded-full transition-colors duration-200 ${
                   index === currentIndex
                     ? 'bg-blue-500'
                     : 'bg-gray-300 dark:bg-gray-600'
-                }`}
+                } disabled:opacity-50`}
               />
             ))}
           </div>

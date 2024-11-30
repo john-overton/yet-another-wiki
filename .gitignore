@@ -48,3 +48,6 @@ pocketbase.exe
 
 # documentation
 /documentation
+
+#stripe sample
+stripe_sample
