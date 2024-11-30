@@ -19,7 +19,7 @@ export async function GET() {
     // Get total count of reviews
     const totalCount = allReviews.length;
 
-    // Get 5 random reviews for display
+    // Get 10 random reviews for display (increased from 5)
     const randomReviews = await prisma.$queryRaw`
       SELECT 
         "UserReview".*,
@@ -29,7 +29,7 @@ export async function GET() {
       FROM "UserReview"
       LEFT JOIN "User" ON "UserReview"."userId" = "User"."id"
       ORDER BY RANDOM()
-      LIMIT 5
+      LIMIT 10
     `;
 
     // Format the reviews to match the expected structure

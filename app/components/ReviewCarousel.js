@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 
 const BORDER_COLORS = [
@@ -19,6 +19,7 @@ const ReviewCarousel = () => {
   const [loading, setLoading] = useState(true);
   const [slideDirection, setSlideDirection] = useState('left');
   const [timestamp, setTimestamp] = useState(Date.now());
+  const timerRef = useRef(null);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -40,29 +41,42 @@ const ReviewCarousel = () => {
     fetchReviews();
   }, []);
 
+  const resetTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    timerRef.current = setInterval(() => {
+      handleNext();
+    }, 5000);
+  }, []);
+
   const handleNext = useCallback(() => {
     setSlideDirection('left');
     setCurrentIndex((current) => 
       current === reviews.length - 1 ? 0 : current + 1
     );
-  }, [reviews.length]);
+    resetTimer();
+  }, [reviews.length, resetTimer]);
 
   useEffect(() => {
     if (reviews.length === 0) return;
 
-    // Auto-advance carousel every 5 seconds
-    const interval = setInterval(() => {
-      handleNext();
-    }, 5000);
+    // Initial timer setup
+    resetTimer();
 
-    return () => clearInterval(interval);
-  }, [reviews, handleNext]);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [reviews, resetTimer]);
 
   const handlePrevious = () => {
     setSlideDirection('right');
     setCurrentIndex((current) => 
       current === 0 ? reviews.length - 1 : current - 1
     );
+    resetTimer();
   };
 
   const getAvatarSrc = (avatar) => {
@@ -214,7 +228,10 @@ const ReviewCarousel = () => {
             {reviews.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentIndex(index)}
+                onClick={() => {
+                  setCurrentIndex(index);
+                  resetTimer();
+                }}
                 className={`w-2 h-2 rounded-full ${
                   index === currentIndex
                     ? 'bg-blue-500'
