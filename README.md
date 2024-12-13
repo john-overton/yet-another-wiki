@@ -63,10 +63,14 @@ docker up -d -p 3000:3000 joverton/yet-another-wiki-app
 
 #### Option 2: Prerequisites
 
+
+
+
 Before beginning the installation, ensure you have:
 
 1. [Git](https://git-scm.com/downloads)
 2. [Node.js](https://nodejs.org/en/download/prebuilt-installer/current)
+3. A personal or pro license key: [Yet Another Wiki](https://www.yetanotherwiki.com)
 
 #### Installation Steps
 
