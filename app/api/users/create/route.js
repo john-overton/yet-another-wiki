@@ -30,6 +30,20 @@ export async function POST(request) {
       }
     }
 
+    // Check if user with email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email: userData.email }
+    });
+
+    if (existingUser) {
+      return new Response(JSON.stringify({ 
+        error: 'A user with this email already exists' 
+      }), {
+        status: 409,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(userData.password, 10);
 
@@ -56,7 +70,20 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Error creating user:', error);
-    return new Response(JSON.stringify({ error: 'Failed to create user' }), {
+    
+    // Handle known Prisma errors
+    if (error.code === 'P2002') {
+      return new Response(JSON.stringify({ 
+        error: 'A user with this email already exists' 
+      }), {
+        status: 409,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    return new Response(JSON.stringify({ 
+      error: 'An unexpected error occurred while creating the user' 
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
