@@ -1,4 +1,4 @@
-# Yet Another Wiki
+# Yet Another Wiki - Demo
 
 A Next.js-based wiki application with advanced features including authentication, rate limiting, and security protections.
 

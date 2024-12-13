@@ -1,6 +1,6 @@
 {
   "name": "yet-another-wiki",
-  "version": "1.0.016",
+  "version": "1.0.016-demo",
   "private": true,
   "scripts": {
     "dev": "next dev",
